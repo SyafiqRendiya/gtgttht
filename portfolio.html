@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Portfolio - [Nama Teman]</title>
+    <title>My Portfolio - Iqbal</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,26 +15,15 @@
     
     <style>
         :root {
-            --bg-primary: #0f0f0f;
-            --bg-secondary: #1a1a1a;
-            --bg-card: #242424;
-            --text-primary: #ffffff;
-            --text-secondary: #b0b0b0;
-            --text-muted: #666666;
-            --accent-primary: #00d4ff;
-            --accent-gradient: linear-gradient(135deg, #00d4ff, #0099cc);
-            --border-color: #333333;
-            --space-xs: 0.5rem;
-            --space-sm: 1rem;
-            --space-md: 1.5rem;
-            --space-lg: 2rem;
-            --space-xl: 3rem;
-            --space-xxl: 4rem;
-            --radius-sm: 4px;
-            --radius-md: 8px;
-            --radius-lg: 12px;
-            --transition-fast: 0.2s ease;
-            --transition-normal: 0.3s ease;
+            --primary: #00d4ff;
+            --primary-dark: #0099cc;
+            --bg-dark: #0f0f0f;
+            --bg-card: #1a1a1a;
+            --text-white: #ffffff;
+            --text-gray: #b0b0b0;
+            --border: #333333;
+            --radius: 12px;
+            --transition: 0.3s ease;
         }
 
         * {
@@ -45,29 +34,30 @@
 
         body {
             font-family: 'Outfit', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            background: var(--bg-dark);
+            color: var(--text-white);
             line-height: 1.6;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 var(--space-md);
+            padding: 0 20px;
         }
 
-        /* Header Styles */
-        .admin-header {
-            background: var(--bg-primary);
-            border-bottom: 1px solid var(--border-color);
-            padding: var(--space-md) 0;
+        /* Header */
+        .site-header {
             position: fixed;
-            width: 100%;
             top: 0;
+            width: 100%;
+            background: rgba(15, 15, 15, 0.95);
+            backdrop-filter: blur(10px);
             z-index: 1000;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
         }
 
-        .admin-header nav {
+        .site-header nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -76,494 +66,681 @@
         .logo {
             font-size: 1.5rem;
             font-weight: 700;
-            background: var(--accent-gradient);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        /* Main Content */
-        .admin-main {
-            margin-top: 80px;
-            padding: var(--space-xl) 0;
-            min-height: 100vh;
-        }
-
-        /* Stats */
-        .admin-stats {
+        .nav-menu {
             display: flex;
-            justify-content: center;
-            margin-bottom: var(--space-xl);
+            list-style: none;
+            gap: 30px;
+            align-items: center;
         }
 
-        .admin-stat {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            text-align: center;
-            min-width: 200px;
+        .nav-menu a {
+            color: var(--text-white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
         }
 
-        .admin-stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: var(--space-xs);
+        .nav-menu a:hover {
+            color: var(--primary);
         }
 
-        .admin-stat-label {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        /* Buttons */
         .btn {
-            padding: var(--space-sm) var(--space-lg);
-            border: none;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition-normal);
             display: inline-flex;
             align-items: center;
-            gap: var(--space-xs);
-            font-family: 'Outfit', sans-serif;
+            gap: 8px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
             text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
         }
 
-        .btn-primary {
-            background: var(--accent-gradient);
-            color: white;
+        .btn-outline {
+            background: transparent;
+            color: var(--text-white);
+            border: 2px solid var(--border);
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
-        }
-
-        .btn-secondary {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            background: var(--border-color);
-        }
-
-        .btn-danger {
-            background: #ff4757;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #ff3838;
-            transform: translateY(-2px);
-        }
-
-        .btn-warning {
-            background: #ffa502;
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background: #ff7f00;
-            transform: translateY(-2px);
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
         .btn-sm {
-            padding: var(--space-xs) var(--space-sm);
+            padding: 8px 16px;
             font-size: 0.9rem;
         }
 
-        /* Actions */
-        .admin-actions {
+        /* Portfolio Hero */
+        .portfolio-hero {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 153, 204, 0.05));
+            padding: 120px 0 80px;
+            text-align: center;
+        }
+
+        .portfolio-hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .portfolio-hero .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .portfolio-hero p {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Filter Buttons */
+        .portfolio-filters {
             display: flex;
-            gap: var(--space-md);
-            margin-bottom: var(--space-xl);
+            justify-content: center;
+            gap: 15px;
+            margin: 40px 0;
             flex-wrap: wrap;
         }
 
+        .filter-btn {
+            padding: 12px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text-white);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
         /* Portfolio Grid */
+        .portfolio-section {
+            padding: 40px 0 80px;
+        }
+
         .portfolio-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: var(--space-lg);
+            gap: 30px;
         }
 
-        .portfolio-item-admin {
+        .portfolio-item {
             background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
+            border-radius: var(--radius);
             overflow: hidden;
-            transition: var(--transition-normal);
-            position: relative;
+            border: 1px solid var(--border);
+            transition: var(--transition);
         }
 
-        .portfolio-item-admin:hover {
+        .portfolio-item:hover {
             transform: translateY(-5px);
-            border-color: var(--accent-primary);
+            border-color: var(--primary);
         }
 
-        .platform-badge {
-            position: absolute;
-            top: var(--space-md);
-            right: var(--space-md);
-            background: rgba(255, 255, 255, 0.9);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .item-actions {
-            position: absolute;
-            top: var(--space-md);
-            left: var(--space-md);
-            display: flex;
-            gap: var(--space-xs);
-            z-index: 2;
-        }
-
-        .portfolio-img-admin {
-            width: 100%;
+        .portfolio-img {
+            position: relative;
             height: 200px;
             overflow: hidden;
         }
 
-        .portfolio-img-admin img {
+        .portfolio-img img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: var(--transition-normal);
+            transition: var(--transition);
         }
 
-        .portfolio-item-admin:hover .portfolio-img-admin img {
+        .portfolio-item:hover .portfolio-img img {
             transform: scale(1.05);
         }
 
-        .portfolio-content-admin {
-            padding: var(--space-lg);
+        .portfolio-overlay {
+            position: absolute;
+            top: 15px;
+            right: 15px;
         }
 
-        .portfolio-content-admin h3 {
-            margin-bottom: var(--space-xs);
-            color: var(--text-primary);
+        .platform-badge {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .platform-badge i {
             font-size: 1.2rem;
         }
 
-        .portfolio-content-admin p {
-            color: var(--text-secondary);
-            margin-bottom: var(--space-md);
-            line-height: 1.5;
+        .youtube-badge { color: #ff0000; }
+        .tiktok-badge { color: #000000; }
+        .instagram-badge { color: #e4405f; }
+        .facebook-badge { color: #1877f2; }
+        .twitter-badge { color: #1da1f2; }
+        .website-badge { color: var(--primary); }
+
+        .portfolio-content {
+            padding: 20px;
         }
 
-        .portfolio-meta-admin {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: var(--space-md);
-            padding-top: var(--space-md);
-            border-top: 1px solid var(--border-color);
+        .portfolio-content h3 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
         }
 
-        .portfolio-platform-admin {
-            display: flex;
-            align-items: center;
-            gap: var(--space-xs);
-            color: var(--accent-primary);
-            font-weight: 600;
-        }
-
-        .portfolio-date-admin {
-            color: var(--text-muted);
-            font-size: 0.8rem;
-        }
-
-        /* Modal Styles */
-        .modal-admin {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 10, 10, 0.95);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        .modal-admin.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content-admin {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            width: 90%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            transform: translateY(-20px);
-            transition: transform 0.3s ease;
-        }
-
-        .modal-admin.show .modal-content-admin {
-            transform: translateY(0);
-        }
-
-        .modal-header-admin {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--space-lg);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .modal-header-admin h3 {
-            margin: 0;
-            color: var(--text-primary);
-        }
-
-        .close-btn-admin {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 0;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: var(--transition-fast);
-        }
-
-        .close-btn-admin:hover {
-            background: var(--bg-primary);
-            color: var(--accent-primary);
-        }
-
-        .modal-body-admin {
-            padding: var(--space-lg);
-        }
-
-        .form-group-admin {
-            margin-bottom: var(--space-lg);
-        }
-
-        .form-group-admin label {
-            display: block;
-            margin-bottom: var(--space-xs);
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        .form-group-admin input,
-        .form-group-admin textarea {
-            width: 100%;
-            padding: var(--space-md);
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            color: var(--text-primary);
-            font-family: 'Outfit', sans-serif;
-            transition: var(--transition-normal);
-        }
-
-        .form-group-admin input:focus,
-        .form-group-admin textarea:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-        }
-
-        .form-group-admin textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .url-note-admin {
-            color: var(--accent-primary);
-            margin-top: var(--space-xs);
-            font-size: 0.8rem;
-            display: block;
-        }
-
-        .modal-actions-admin {
-            display: flex;
-            gap: var(--space-md);
-            justify-content: flex-end;
-            padding: var(--space-lg);
-            border-top: 1px solid var(--border-color);
-        }
-
-        .auto-fill-info {
-            background: rgba(0, 212, 255, 0.1);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-            margin-bottom: var(--space-lg);
+        .portfolio-content p {
+            color: var(--text-gray);
+            margin-bottom: 15px;
             font-size: 0.9rem;
-            color: var(--accent-primary);
         }
 
-        /* Empty State */
-        .empty-state-admin {
+        .portfolio-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .portfolio-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .portfolio-date {
+            color: var(--text-gray);
+            font-size: 0.8rem;
+        }
+
+        .empty-portfolio {
             text-align: center;
-            padding: var(--space-xxl);
+            padding: 80px 20px;
             grid-column: 1 / -1;
         }
 
-        .empty-state-admin i {
+        .empty-portfolio i {
             font-size: 4rem;
-            color: var(--accent-primary);
-            margin-bottom: var(--space-lg);
-            opacity: 0.7;
+            color: var(--text-gray);
+            margin-bottom: 20px;
+            opacity: 0.5;
         }
 
-        .empty-state-admin h3 {
-            margin-bottom: var(--space-md);
-            color: var(--text-primary);
+        .empty-portfolio h3 {
+            margin-bottom: 10px;
+            color: var(--text-white);
         }
 
-        .empty-state-admin p {
-            color: var(--text-secondary);
-            max-width: 400px;
-            margin: 0 auto;
+        .empty-portfolio p {
+            color: var(--text-gray);
         }
 
-        /* Back Button */
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-xs);
-            color: var(--text-secondary);
+        /* Stats */
+        .portfolio-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: var(--radius);
+            text-align: center;
+            border: 1px solid var(--border);
+            min-width: 150px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .site-footer {
+            background: var(--bg-card);
+            padding: 50px 0 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 50px;
+            margin-bottom: 30px;
+        }
+
+        .footer-brand .logo {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .footer-brand p {
+            color: var(--text-gray);
+        }
+
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .link-group h4 {
+            margin-bottom: 15px;
+            color: var(--text-white);
+        }
+
+        .link-group a {
+            display: block;
+            color: var(--text-gray);
             text-decoration: none;
-            font-weight: 600;
-            transition: var(--transition-fast);
+            margin-bottom: 8px;
+            transition: var(--transition);
         }
 
-        .back-btn:hover {
-            color: var(--accent-primary);
+        .link-group a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text-gray);
         }
 
         /* Responsive */
         @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .portfolio-hero h1 {
+                font-size: 2.5rem;
+            }
+            
             .portfolio-grid {
                 grid-template-columns: 1fr;
             }
             
-            .admin-actions {
-                flex-direction: column;
+            .portfolio-filters {
+                gap: 10px;
             }
             
-            .admin-stat {
-                min-width: 150px;
+            .filter-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .portfolio-stats {
+                gap: 15px;
+            }
+            
+            .stat-card {
+                min-width: 120px;
+                padding: 15px;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .footer-links {
+                grid-template-columns: 1fr;
+                gap: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Admin Header -->
-    <header class="admin-header">
+    <!-- Header -->
+    <header class="site-header">
         <nav class="container">
-            <div class="logo">[Nama Teman] - Admin</div>
-            <div style="display: flex; align-items: center; gap: var(--space-lg);">
-                <a href="index.html" class="back-btn">
-                    <i class="fas fa-home"></i>
-                    Back to Site
-                </a>
-            </div>
+            <div class="logo">Iqbal</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#skills">Skills</a></li>
+                <li><a href="index.html#portfolio">Portfolio</a></li>
+                <li><a href="index.html#services">Layanan</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+                <li><a href="portfolio-admin.html" class="btn btn-outline btn-sm">Admin</a></li>
+            </ul>
         </nav>
     </header>
 
-    <!-- Admin Main Content -->
-    <main class="admin-main">
+    <!-- Portfolio Hero -->
+    <section class="portfolio-hero">
         <div class="container">
-            <!-- Stats -->
-            <div class="admin-stats">
-                <div class="admin-stat">
-                    <div class="admin-stat-number" id="totalProjects">0</div>
-                    <div class="admin-stat-label">Total Projects</div>
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="admin-actions">
-                <button class="btn btn-primary" onclick="showAddForm()">
-                    <i class="fas fa-plus"></i>
-                    Add New Project
-                </button>
-                <button class="btn btn-secondary" onclick="loadPortfolioProjects()">
-                    <i class="fas fa-sync-alt"></i>
-                    Refresh
-                </button>
-            </div>
-
-            <!-- Portfolio Grid -->
-            <div class="portfolio-grid" id="portfolioGridAdmin">
-                <!-- Portfolio items will be loaded here -->
-            </div>
+            <h1>My <span class="gradient-text">Portfolio</span></h1>
+            <p>Kumpulan project yang udah gua handle dengan penuh passion dan creativity</p>
         </div>
-    </main>
+    </section>
 
-    <!-- Add Project Modal -->
-    <div id="addProjectModal" class="modal-admin">
-        <div class="modal-content-admin">
-            <div class="modal-header-admin">
-                <h3>Add New Project</h3>
-                <button class="close-btn-admin" onclick="hideAddForm()">&times;</button>
+    <!-- Portfolio Stats -->
+    <div class="container">
+        <div class="portfolio-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalProjects">0</div>
+                <div class="stat-label">Total Projects</div>
             </div>
-            <div class="modal-body-admin">
-                <div class="auto-fill-info">
-                    <i class="fas fa-magic"></i>
-                    Just paste the URL - title & description will be auto-filled!
-                </div>
-                <div class="form-group-admin">
-                    <label for="projectUrl">Project URL *</label>
-                    <input type="url" id="projectUrl" placeholder="https://www.youtube.com/watch?v=..." 
-                           oninput="handleUrlInput()">
-                    <span class="url-note-admin">
-                        <i class="fas fa-info-circle"></i> YouTube, Instagram, TikTok, Facebook, Twitter
-                    </span>
-                </div>
-                <!-- Title dan Description dihapus - akan auto generate -->
+            <div class="stat-card">
+                <div class="stat-number" id="youtubeProjects">0</div>
+                <div class="stat-label">YouTube Videos</div>
             </div>
-            <div class="modal-actions-admin">
-                <button class="btn btn-secondary" onclick="hideAddForm()">Cancel</button>
-                <button class="btn btn-primary" onclick="saveProject()" id="saveBtn">
-                    <i class="fas fa-save"></i>
-                    Save Project
-                </button>
+            <div class="stat-card">
+                <div class="stat-number" id="tiktokProjects">0</div>
+                <div class="stat-label">TikTok Videos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="instagramProjects">0</div>
+                <div class="stat-label">Instagram Posts</div>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript -->
+    <!-- Portfolio Section -->
+    <section class="portfolio-section">
+        <div class="container">
+            <!-- Filter Buttons -->
+            <div class="portfolio-filters">
+                <button class="filter-btn active" data-filter="all">All Projects</button>
+                <button class="filter-btn" data-filter="YouTube">YouTube</button>
+                <button class="filter-btn" data-filter="TikTok">TikTok</button>
+                <button class="filter-btn" data-filter="Instagram">Instagram</button>
+                <button class="filter-btn" data-filter="Facebook">Facebook</button>
+                <button class="filter-btn" data-filter="Twitter">Twitter</button>
+            </div>
+            
+            <!-- Portfolio Grid -->
+            <div class="portfolio-grid" id="portfolioGrid">
+                <div class="empty-portfolio">
+                    <i class="fas fa-film"></i>
+                    <h3>Belum Ada Project</h3>
+                    <p>Project akan muncul di sini setelah ditambahkan melalui admin panel</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">Iqbal</div>
+                    <p>Turning ideas into engaging visual stories</p>
+                </div>
+                
+                <div class="footer-links">
+                    <div class="link-group">
+                        <h4>Quick Links</h4>
+                        <a href="index.html">Home</a>
+                        <a href="index.html#skills">Skills</a>
+                        <a href="index.html#portfolio">Portfolio</a>
+                    </div>
+                    
+                    <div class="link-group">
+                        <h4>Services</h4>
+                        <a href="index.html#services">Short Videos</a>
+                        <a href="index.html#services">Gaming Content</a>
+                        <a href="index.html#services">Vlog Editing</a>
+                    </div>
+                    
+                    <div class="link-group">
+                        <h4>Connect</h4>
+                        <a href="https://discord.gg/TDr5HcQTng" target="_blank">Discord</a>
+                        <a href="#">Instagram</a>
+                        <a href="mailto:syafiq100308@gmail.com">Email</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Iqbal. Made with ❤️ for amazing content</p>
+            </div>
+        </div>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // ==========================================
-        // SUPABASE CONFIGURATION - GANTI DENGAN AKUN TEMAN LU
+        // SUPABASE CONFIGURATION - GANTI INI
         // ==========================================
-        const supabaseUrl = 'https://YOUR-NEW-SUPABASE-PROJECT.supabase.co';
-        const supabaseKey = 'YOUR-NEW-SUPABASE-ANON-KEY';
+        const supabaseUrl = 'https://YOUR-SUPABASE-PROJECT.supabase.co';
+        const supabaseKey = 'YOUR-SUPABASE-ANON-KEY';
         const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // ==========================================
+        // PORTFOLIO FUNCTIONS
+        // ==========================================
+        let allProjects = [];
+
+        async function loadAllProjects() {
+            try {
+                const { data: projects, error } = await supabase
+                    .from('Portfolio')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                allProjects = projects || [];
+                renderProjects(allProjects);
+                updateStats(allProjects);
+                
+            } catch (error) {
+                console.error('Error loading projects:', error);
+                showEmptyPortfolio();
+            }
+        }
+
+        function updateStats(projects) {
+            const total = projects.length;
+            const youtube = projects.filter(p => p.platform === 'YouTube').length;
+            const tiktok = projects.filter(p => p.platform === 'TikTok').length;
+            const instagram = projects.filter(p => p.platform === 'Instagram').length;
+            
+            document.getElementById('totalProjects').textContent = total;
+            document.getElementById('youtubeProjects').textContent = youtube;
+            document.getElementById('tiktokProjects').textContent = tiktok;
+            document.getElementById('instagramProjects').textContent = instagram;
+        }
+
+        function renderProjects(projects) {
+            const portfolioGrid = document.getElementById('portfolioGrid');
+            
+            if (projects.length === 0) {
+                showEmptyPortfolio();
+                return;
+            }
+            
+            portfolioGrid.innerHTML = '';
+            
+            projects.forEach(project => {
+                const projectElement = createProjectElement(project);
+                portfolioGrid.appendChild(projectElement);
+            });
+        }
+
+        function createProjectElement(project) {
+            const element = document.createElement('div');
+            element.className = 'portfolio-item';
+            element.setAttribute('data-platform', project.platform);
+            
+            let actionButton;
+            let badgeClass = getBadgeClass(project.platform);
+            let actionIcon = getActionIcon(project.platform);
+            let actionText = getActionText(project.platform);
+            
+            element.innerHTML = `
+                <div class="portfolio-img">
+                    <img src="${project.image_url}" alt="${project.title}" loading="lazy" 
+                         onerror="this.src='https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=225&fit=crop'">
+                    <div class="portfolio-overlay">
+                        <div class="platform-badge ${badgeClass}">
+                            <i class="${project.platform_icon}"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="portfolio-content">
+                    <h3>${project.title}</h3>
+                    <p>${project.description}</p>
+                    <div class="portfolio-meta">
+                        <a href="${project.url}" target="_blank" class="portfolio-link">
+                            <i class="${actionIcon}"></i> ${actionText}
+                        </a>
+                        <span class="portfolio-date">${formatDate(project.created_at)}</span>
+                    </div>
+                </div>
+            `;
+            return element;
+        }
+
+        function getBadgeClass(platform) {
+            const badgeClasses = {
+                'YouTube': 'youtube-badge',
+                'TikTok': 'tiktok-badge',
+                'Instagram': 'instagram-badge',
+                'Facebook': 'facebook-badge',
+                'Twitter': 'twitter-badge'
+            };
+            return badgeClasses[platform] || 'website-badge';
+        }
+
+        function getActionIcon(platform) {
+            const actionIcons = {
+                'YouTube': 'fas fa-play-circle',
+                'TikTok': 'fas fa-music',
+                'Instagram': 'fas fa-camera',
+                'Facebook': 'fab fa-facebook',
+                'Twitter': 'fab fa-twitter'
+            };
+            return actionIcons[platform] || 'fas fa-external-link-alt';
+        }
+
+        function getActionText(platform) {
+            const actionTexts = {
+                'YouTube': 'Watch Video',
+                'TikTok': 'Watch TikTok',
+                'Instagram': 'View Post',
+                'Facebook': 'View Post',
+                'Twitter': 'View Tweet'
+            };
+            return actionTexts[platform] || 'View Content';
+        }
+
+        function showEmptyPortfolio() {
+            const portfolioGrid = document.getElementById('portfolioGrid');
+            portfolioGrid.innerHTML = `
+                <div class="empty-portfolio">
+                    <i class="fas fa-film"></i>
+                    <h3>Belum Ada Project</h3>
+                    <p>Project akan muncul di sini setelah ditambahkan melalui admin panel</p>
+                </div>
+            `;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // ==========================================
+        // FILTER FUNCTIONALITY
+        // ==========================================
+        function initFilters() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    const filter = this.getAttribute('data-filter');
+                    filterProjects(filter);
+                });
+            });
+        }
+
+        function filterProjects(platform) {
+            if (platform === 'all') {
+                renderProjects(allProjects);
+            } else {
+                const filteredProjects = allProjects.filter(project => 
+                    project.platform === platform
+                );
+                renderProjects(filteredProjects);
+            }
+        }
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAllProjects();
+            initFilters();
+            
+            // Smooth scrolling for navigation
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+
+            // Navbar scroll effect
+            window.addEventListener('scroll', function() {
+                const header = document.querySelector('.site-header');
+                if (window.scrollY > 100) {
+                    header.style.background = 'rgba(15, 15, 15, 0.98)';
+                } else {
+                    header.style.background = 'rgba(15, 15, 15, 0.95)';
+                }
+            });
+        });
     </script>
-    <script src="portfolio.js"></script>
 </body>
 </html>
