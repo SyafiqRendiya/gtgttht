@@ -73,77 +73,68 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .nav-menu {
+        .header-buttons {
             display: flex;
-            list-style: none;
-            gap: 30px;
+            gap: 10px;
             align-items: center;
         }
 
-        .nav-menu a {
-            color: var(--text-white);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-            position: relative;
-        }
-
-        .nav-menu a:hover {
-            color: var(--primary);
-        }
-
-        .nav-menu a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--primary);
-            transition: var(--transition);
-        }
-
-        .nav-menu a:hover::after {
-            width: 100%;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: var(--radius);
-            font-weight: 600;
-            text-decoration: none;
-            transition: var(--transition);
-            cursor: pointer;
-        }
-
-        .btn-outline {
+        .back-btn {
             background: transparent;
             color: var(--text-white);
-            border: 2px solid var(--border);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            text-decoration: none;
         }
 
-        .btn-outline:hover {
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
             border-color: var(--primary);
             color: var(--primary);
-            transform: translateY(-2px);
         }
 
-        .btn-sm {
+        .refresh-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
             padding: 8px 16px;
-            font-size: 0.9rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .refresh-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
         }
 
         /* Portfolio Hero */
         .portfolio-hero {
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 153, 204, 0.05));
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 153, 204, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
+                linear-gradient(135deg, rgba(15, 15, 15, 0.9), rgba(26, 26, 26, 0.9));
             padding: 140px 0 80px;
             text-align: center;
             position: relative;
             overflow: hidden;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
         }
 
         .portfolio-hero::before {
@@ -153,7 +144,15 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 30% 50%, rgba(0, 212, 255, 0.1), transparent 50%);
+            background: 
+                radial-gradient(circle at 30% 50%, rgba(0, 212, 255, 0.1), transparent 50%),
+                radial-gradient(circle at 70% 30%, rgba(0, 153, 204, 0.08), transparent 50%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-20px) scale(1.02); }
         }
 
         .portfolio-hero h1 {
@@ -178,53 +177,57 @@
             position: relative;
         }
 
-        /* Filter Buttons */
-        .portfolio-filters {
+        /* Stats - Hanya Total Project */
+        .portfolio-stats {
             display: flex;
             justify-content: center;
-            gap: 15px;
             margin: 40px 0;
             flex-wrap: wrap;
-            position: relative;
         }
 
-        .filter-btn {
-            padding: 12px 24px;
+        .stat-card {
             background: var(--bg-card);
-            border: 1px solid var(--border);
+            padding: 40px;
             border-radius: var(--radius);
-            color: var(--text-white);
-            cursor: pointer;
+            text-align: center;
+            border: 1px solid var(--border);
+            min-width: 250px;
             transition: var(--transition);
-            font-weight: 500;
             position: relative;
             overflow: hidden;
         }
 
-        .filter-btn::before {
+        .stat-card::before {
             content: '';
             position: absolute;
             top: 0;
-            left: -100%;
+            left: 0;
             width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.2), transparent);
-            transition: var(--transition);
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
         }
 
-        .filter-btn:hover::before {
-            left: 100%;
-        }
-
-        .filter-btn:hover,
-        .filter-btn.active {
-            background: var(--primary);
+        .stat-card:hover {
+            transform: translateY(-5px);
             border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+            box-shadow: 0 15px 30px rgba(0, 212, 255, 0.2);
         }
 
-        /* Portfolio Grid */
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Portfolio Grid - DIKECILKAN GAP NYA */
         .portfolio-section {
             padding: 40px 0 80px;
         }
@@ -232,7 +235,7 @@
         .portfolio-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 30px;
+            gap: 20px; /* DIKURANGI DARI 30px JADI 20px */
         }
 
         .portfolio-item {
@@ -383,60 +386,6 @@
             color: var(--text-gray);
         }
 
-        /* Stats */
-        .portfolio-stats {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin: 40px 0;
-            flex-wrap: wrap;
-        }
-
-        .stat-card {
-            background: var(--bg-card);
-            padding: 25px;
-            border-radius: var(--radius);
-            text-align: center;
-            border: 1px solid var(--border);
-            min-width: 150px;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-            transform: scaleX(0);
-            transition: var(--transition);
-        }
-
-        .stat-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            color: var(--text-gray);
-            font-size: 0.9rem;
-        }
-
         /* Footer */
         .site-footer {
             background: var(--bg-card);
@@ -519,7 +468,7 @@
             color: var(--text-gray);
         }
 
-        /* Video Player Modal */
+        /* VIDEO PLAYER MODAL - DIPERBAIKI */
         .video-player-modal {
             display: none;
             position: fixed;
@@ -535,6 +484,7 @@
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(10px);
+            padding: 20px;
         }
         
         .video-player-modal.show {
@@ -548,8 +498,9 @@
             background: var(--bg-card);
             border-radius: var(--radius);
             overflow: hidden;
-            border: 1px solid var(--border);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--primary);
+            box-shadow: 0 20px 60px rgba(0, 212, 255, 0.3);
+            position: relative;
         }
         
         .video-player-header {
@@ -558,7 +509,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(26, 26, 26, 0.9);
+            background: rgba(26, 26, 26, 0.95);
         }
         
         .video-player-title {
@@ -568,12 +519,12 @@
         }
         
         .close-video-btn {
-            background: none;
+            background: rgba(255, 255, 255, 0.1);
             border: none;
-            color: var(--text-gray);
-            font-size: 1.5rem;
+            color: var(--text-white);
+            font-size: 1.2rem;
             cursor: pointer;
-            padding: 5px;
+            padding: 8px;
             transition: var(--transition);
             width: 40px;
             height: 40px;
@@ -581,64 +532,61 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            border: 1px solid var(--border);
         }
         
         .close-video-btn:hover {
             color: var(--primary);
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
         }
         
         .video-embed-container {
             position: relative;
             width: 100%;
-            height: 0;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
             background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         
         .video-embed-container iframe {
+            border: none;
+            display: block;
+        }
+        
+        /* VIDEO LANDSCAPE (NORMAL) */
+        .video-embed-container.is-landscape {
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        }
+        
+        .video-embed-container.is-landscape iframe {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            border: none;
         }
         
-        /* Vertical video styles */
-        .video-embed-container.is-shorts {
-            padding-bottom: 177.78%; /* 9:16 aspect ratio for Shorts */
-            max-width: 360px;
+        /* VIDEO VERTICAL (SHORTS/TIKTOK) - DIPERBAIKI */
+        .video-embed-container.is-vertical {
+            height: 80vh;
+            max-height: 700px;
+            max-width: 400px;
             margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
         }
         
-        .video-embed-container.is-tiktok {
-            padding-bottom: 177.78%; /* 9:16 aspect ratio for TikTok */
-            max-width: 360px;
-            margin: 0 auto;
-        }
-
-        /* Loading Animation */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: var(--primary);
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .video-embed-container.is-vertical iframe {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .nav-menu {
-                display: none;
-            }
-            
             .portfolio-hero {
                 padding: 120px 0 60px;
             }
@@ -649,28 +597,16 @@
             
             .portfolio-grid {
                 grid-template-columns: 1fr;
-            }
-            
-            .portfolio-filters {
-                gap: 10px;
-            }
-            
-            .filter-btn {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
-            
-            .portfolio-stats {
                 gap: 15px;
             }
             
             .stat-card {
-                min-width: 120px;
-                padding: 20px;
+                min-width: 200px;
+                padding: 30px;
             }
             
             .stat-number {
-                font-size: 2rem;
+                font-size: 2.8rem;
             }
             
             .footer-content {
@@ -685,7 +621,22 @@
 
             .video-player-content {
                 width: 95%;
-                margin: 20px;
+                margin: 10px;
+            }
+
+            .video-embed-container.is-vertical {
+                height: 70vh;
+                max-height: 500px;
+                max-width: 320px;
+            }
+
+            .header-buttons {
+                gap: 8px;
+            }
+
+            .back-btn, .refresh-btn {
+                padding: 6px 12px;
+                font-size: 0.9rem;
             }
         }
 
@@ -698,23 +649,25 @@
                 font-size: 1rem;
             }
             
-            .portfolio-filters {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .filter-btn {
-                width: 200px;
-            }
-            
-            .portfolio-stats {
-                flex-direction: column;
-                align-items: center;
-            }
-            
             .stat-card {
                 width: 100%;
-                max-width: 200px;
+                max-width: 280px;
+            }
+
+            .video-embed-container.is-vertical {
+                height: 60vh;
+                max-height: 400px;
+                max-width: 280px;
+            }
+
+            .header-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .back-btn, .refresh-btn {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -724,14 +677,16 @@
     <header class="site-header">
         <nav class="container">
             <div class="logo">Iqbal</div>
-            <ul class="nav-menu">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="index.html#skills">Skills</a></li>
-                <li><a href="index.html#portfolio">Portfolio</a></li>
-                <li><a href="index.html#services">Layanan</a></li>
-                <li><a href="index.html#contact">Contact</a></li>
-                <li><a href="portfolio-admin.html" class="btn btn-outline btn-sm">Admin</a></li>
-            </ul>
+            <div class="header-buttons">
+                <a href="index.html" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Site
+                </a>
+                <button class="refresh-btn" onclick="refreshPortfolio()">
+                    <i class="fas fa-sync-alt"></i>
+                    Refresh
+                </button>
+            </div>
         </nav>
     </header>
 
@@ -743,24 +698,12 @@
         </div>
     </section>
 
-    <!-- Portfolio Stats -->
+    <!-- Portfolio Stats - Hanya Total Project -->
     <div class="container">
         <div class="portfolio-stats">
             <div class="stat-card">
                 <div class="stat-number" id="totalProjects">0</div>
                 <div class="stat-label">Total Projects</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="youtubeProjects">0</div>
-                <div class="stat-label">YouTube Videos</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="tiktokProjects">0</div>
-                <div class="stat-label">TikTok Videos</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="instagramProjects">0</div>
-                <div class="stat-label">Instagram Posts</div>
             </div>
         </div>
     </div>
@@ -768,16 +711,6 @@
     <!-- Portfolio Section -->
     <section class="portfolio-section">
         <div class="container">
-            <!-- Filter Buttons -->
-            <div class="portfolio-filters">
-                <button class="filter-btn active" data-filter="all">All Projects</button>
-                <button class="filter-btn" data-filter="YouTube">YouTube</button>
-                <button class="filter-btn" data-filter="TikTok">TikTok</button>
-                <button class="filter-btn" data-filter="Instagram">Instagram</button>
-                <button class="filter-btn" data-filter="Facebook">Facebook</button>
-                <button class="filter-btn" data-filter="Twitter">Twitter</button>
-            </div>
-            
             <!-- Portfolio Grid -->
             <div class="portfolio-grid" id="portfolioGrid">
                 <div class="empty-portfolio">
@@ -799,22 +732,6 @@
                 </div>
                 
                 <div class="footer-links">
-                    <div class="link-group">
-                        <h4>Quick Links</h4>
-                        <a href="index.html">Home</a>
-                        <a href="index.html#skills">Skills</a>
-                        <a href="index.html#portfolio">Portfolio</a>
-                        <a href="index.html#services">Services</a>
-                    </div>
-                    
-                    <div class="link-group">
-                        <h4>Services</h4>
-                        <a href="index.html#services">Short Videos</a>
-                        <a href="index.html#services">Gaming Content</a>
-                        <a href="index.html#services">Vlog Editing</a>
-                        <a href="index.html#services">Social Media</a>
-                    </div>
-                    
                     <div class="link-group">
                         <h4>Connect</h4>
                         <a href="https://discord.gg/TDr5HcQTng" target="_blank">Discord</a>
@@ -850,10 +767,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // ==========================================
-        // SUPABASE CONFIGURATION - PAKAI YANG BARU
+        // SUPABASE CONFIGURATION - FIXED
         // ==========================================
-        const SUPABASE_URL = 'https://eabhpznktrytcwvrjagu.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhYmhwem5rdHJ5dGN3dnJqYWd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk2MjU2NzcsImV4cCI6MjAyNTIwMTY3N30.UkX4_xKoD8m9_1fJd2M0Nkwo1k1MGAq8uJjC3xJ8J5E';
+        const SUPABASE_URL = 'https://bqmsfhnojmmaouaweixi.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxbXNmaG5vam1tYW91YXdlaXhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNjg3ODAsImV4cCI6MjA3OTc0NDc4MH0.SOU9dUdJqWwa4BWW0qgbdIRiZNV8uH2v_654f_Puqa8';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // ==========================================
@@ -865,6 +782,7 @@
         // PORTFOLIO FUNCTIONS - PUBLIC VIEW
         // ==========================================
 
+        // Load semua projects dari database
         async function loadAllProjects() {
             try {
                 console.log('🔄 Loading projects from database...');
@@ -874,10 +792,7 @@
                     .select('*')
                     .order('created_at', { ascending: false });
                 
-                if (error) {
-                    console.error('Error loading projects:', error);
-                    throw error;
-                }
+                if (error) throw error;
                 
                 allProjects = projects || [];
                 console.log(`✅ Loaded ${allProjects.length} projects`);
@@ -891,19 +806,27 @@
             }
         }
 
-        function updateStats(projects) {
-            const total = projects.length;
-            const youtube = projects.filter(p => p.platform === 'YouTube').length;
-            const tiktok = projects.filter(p => p.platform === 'TikTok').length;
-            const instagram = projects.filter(p => p.platform === 'Instagram').length;
+        // Function refresh portfolio
+        async function refreshPortfolio() {
+            const btn = document.querySelector('.refresh-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+            btn.disabled = true;
             
-            // Animate counting up
-            animateCount('totalProjects', total);
-            animateCount('youtubeProjects', youtube);
-            animateCount('tiktokProjects', tiktok);
-            animateCount('instagramProjects', instagram);
+            await loadAllProjects();
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+                btn.disabled = false;
+            }, 1000);
         }
 
+        // Update statistik - hanya total project
+        function updateStats(projects) {
+            const total = projects.length;
+            animateCount('totalProjects', total);
+        }
+
+        // Animasi counting
         function animateCount(elementId, target) {
             const element = document.getElementById(elementId);
             if (!element) return;
@@ -920,13 +843,10 @@
             }, 30);
         }
 
+        // Render projects ke grid
         function renderProjects(projects) {
             const portfolioGrid = document.getElementById('portfolioGrid');
-            
-            if (!portfolioGrid) {
-                console.error('Portfolio grid element not found!');
-                return;
-            }
+            if (!portfolioGrid) return;
             
             if (projects.length === 0) {
                 showEmptyPortfolio();
@@ -941,32 +861,13 @@
             });
         }
 
+        // Buat element project
         function createProjectElement(project) {
             const element = document.createElement('div');
             element.className = 'portfolio-item';
-            element.setAttribute('data-platform', project.platform);
             
-            let actionButton;
-            let badgeClass = getBadgeClass(project.platform);
-            let actionIcon = getActionIcon(project.platform);
-            let actionText = getActionText(project.platform);
-            
-            // Determine action based on platform
-            if (project.platform === 'YouTube' || project.platform === 'TikTok') {
-                actionButton = `
-                    <button class="portfolio-link" 
-                            onclick="showVideoPlayer('${project.title.replace(/'/g, "\\'")}', '${project.url}', '${project.platform}')"
-                            style="background: none; border: none; cursor: pointer; color: var(--primary); font-family: inherit; padding: 0; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
-                        <i class="${actionIcon}"></i> ${actionText}
-                    </button>
-                `;
-            } else {
-                actionButton = `
-                    <a href="${project.url}" target="_blank" class="portfolio-link">
-                        <i class="${actionIcon}"></i> ${actionText}
-                    </a>
-                `;
-            }
+            const badgeClass = getBadgeClass(project.platform);
+            const actionButton = createActionButton(project);
             
             element.innerHTML = `
                 <div class="portfolio-img">
@@ -991,37 +892,38 @@
             return element;
         }
 
+        // Buat action button berdasarkan platform
+        function createActionButton(project) {
+            if (project.platform === 'YouTube' || project.platform === 'TikTok') {
+                const buttonText = project.platform === 'YouTube' ? 'Watch Video' : 'Watch TikTok';
+                const buttonIcon = project.platform === 'YouTube' ? 'fa-play-circle' : 'fa-music';
+                
+                return `
+                    <button class="portfolio-link" 
+                            onclick="showVideoPlayer('${project.title.replace(/'/g, "\\'")}', '${project.url}', '${project.platform}')"
+                            style="background: none; border: none; cursor: pointer; color: var(--primary); font-family: inherit; padding: 0; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
+                        <i class="fas ${buttonIcon}"></i> ${buttonText}
+                    </button>
+                `;
+            } else {
+                return `
+                    <a href="${project.url}" target="_blank" class="portfolio-link">
+                        <i class="${project.platform_icon}"></i> View on ${project.platform}
+                    </a>
+                `;
+            }
+        }
+
+        // Helper functions
         function getBadgeClass(platform) {
-            const badgeClasses = {
+            const classes = {
                 'YouTube': 'youtube-badge',
                 'TikTok': 'tiktok-badge',
                 'Instagram': 'instagram-badge',
                 'Facebook': 'facebook-badge',
                 'Twitter': 'twitter-badge'
             };
-            return badgeClasses[platform] || 'website-badge';
-        }
-
-        function getActionIcon(platform) {
-            const actionIcons = {
-                'YouTube': 'fas fa-play-circle',
-                'TikTok': 'fas fa-music',
-                'Instagram': 'fas fa-camera',
-                'Facebook': 'fab fa-facebook',
-                'Twitter': 'fab fa-twitter'
-            };
-            return actionIcons[platform] || 'fas fa-external-link-alt';
-        }
-
-        function getActionText(platform) {
-            const actionTexts = {
-                'YouTube': 'Watch Video',
-                'TikTok': 'Watch TikTok',
-                'Instagram': 'View Post',
-                'Facebook': 'View Post',
-                'Twitter': 'View Tweet'
-            };
-            return actionTexts[platform] || 'View Content';
+            return classes[platform] || 'website-badge';
         }
 
         function showEmptyPortfolio() {
@@ -1047,7 +949,7 @@
         }
 
         // ==========================================
-        // VIDEO PLAYER FUNCTIONS
+        // VIDEO PLAYER FUNCTIONS - DIPERBAIKI
         // ==========================================
 
         function showVideoPlayer(title, url, platform) {
@@ -1056,7 +958,6 @@
             const container = document.getElementById('videoEmbedContainer');
             
             if (!modal || !titleElement || !container) {
-                console.error('Modal video player elements not found');
                 window.open(url, '_blank');
                 return;
             }
@@ -1066,6 +967,7 @@
             
             try {
                 let embedUrl = '';
+                let isVertical = false;
 
                 if (platform === 'YouTube') {
                     const videoId = extractYouTubeId(url);
@@ -1077,40 +979,34 @@
                         iframe.src = embedUrl;
                         iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
                         iframe.allowFullscreen = true;
-                        iframe.setAttribute('playsinline', '1');
-                        
                         container.appendChild(iframe);
                         
                         if (isShorts) {
-                            container.classList.add('is-shorts');
+                            isVertical = true;
+                            container.classList.add('is-vertical');
+                        } else {
+                            container.classList.add('is-landscape');
                         }
-                    } else {
-                        throw new Error('YouTube video ID not found');
-                    }
+                    } else throw new Error('YouTube video ID not found');
                     
                 } else if (platform === 'TikTok') {
                     const videoId = extractTikTokVideoId(url);
                     if (videoId) {
                         embedUrl = `https://www.tiktok.com/embed/v2/${videoId}?autoplay=1`;
-                        
                         const iframe = document.createElement('iframe');
                         iframe.src = embedUrl;
                         iframe.allow = "autoplay; fullscreen";
                         iframe.scrolling = "no";
-                        iframe.setAttribute('playsinline', '1');
-                        
                         container.appendChild(iframe);
-                        container.classList.add('is-tiktok');
-                    } else {
-                        throw new Error('TikTok video ID not found');
-                    }
+                        
+                        isVertical = true;
+                        container.classList.add('is-vertical');
+                    } else throw new Error('TikTok video ID not found');
                     
                 } else {
                     window.open(url, '_blank');
                     return;
                 }
-                
-                console.log(`🎬 Playing ${platform} video:`, embedUrl);
                 
                 titleElement.textContent = title;
                 modal.style.display = 'flex';
@@ -1135,9 +1031,7 @@
             if (!modal || !container) return;
             
             const iframe = container.querySelector('iframe');
-            if (iframe) {
-                iframe.src = '';
-            }
+            if (iframe) iframe.src = '';
             container.innerHTML = '';
             container.className = 'video-embed-container';
             
@@ -1177,44 +1071,11 @@
                 
                 for (const pattern of patterns) {
                     const match = url.match(pattern);
-                    if (match) {
-                        if (match[1]) return match[1];
-                        return match[0].split('/').pop();
-                    }
+                    if (match) return match[1] || match[0].split('/').pop();
                 }
                 return null;
             } catch (error) {
-                console.log('Error extracting TikTok ID:', error);
                 return null;
-            }
-        }
-
-        // ==========================================
-        // FILTER FUNCTIONALITY
-        // ==========================================
-
-        function initFilters() {
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    filterBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    const filter = this.getAttribute('data-filter');
-                    filterProjects(filter);
-                });
-            });
-        }
-
-        function filterProjects(platform) {
-            if (platform === 'all') {
-                renderProjects(allProjects);
-            } else {
-                const filteredProjects = allProjects.filter(project => 
-                    project.platform === platform
-                );
-                renderProjects(filteredProjects);
             }
         }
 
@@ -1225,44 +1086,26 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Portfolio Public initialized');
             loadAllProjects();
-            initFilters();
             
-            // Smooth scrolling
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({ behavior: 'smooth' });
-                    }
-                });
-            });
-
             // Navbar scroll effect
             window.addEventListener('scroll', function() {
                 const header = document.querySelector('.site-header');
                 if (header) {
-                    if (window.scrollY > 100) {
-                        header.style.background = 'rgba(15, 15, 15, 0.98)';
-                    } else {
-                        header.style.background = 'rgba(15, 15, 15, 0.95)';
-                    }
+                    header.style.background = window.scrollY > 100 
+                        ? 'rgba(15, 15, 15, 0.98)' 
+                        : 'rgba(15, 15, 15, 0.95)';
                 }
             });
         });
 
-        // Close video player with ESC key
+        // Close video player dengan ESC key
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                hideVideoPlayer();
-            }
+            if (e.key === 'Escape') hideVideoPlayer();
         });
 
-        // Close video player when clicking outside
+        // Close video player ketika klik di luar
         document.addEventListener('click', function(e) {
-            if (e.target.id === 'videoPlayerModal') {
-                hideVideoPlayer();
-            }
+            if (e.target.id === 'videoPlayerModal') hideVideoPlayer();
         });
     </script>
 </body>
