@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portfolio - [Nama Teman]</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-primary: #0f0f0f;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #242424;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --text-muted: #666666;
+            --accent-primary: #00d4ff;
+            --accent-gradient: linear-gradient(135deg, #00d4ff, #0099cc);
+            --border-color: #333333;
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 1.5rem;
+            --space-lg: 2rem;
+            --space-xl: 3rem;
+            --space-xxl: 4rem;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+        }
+
+        /* Header Styles */
+        .admin-header {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: var(--space-md) 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .admin-header nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Main Content */
+        .admin-main {
+            margin-top: 80px;
+            padding: var(--space-xl) 0;
+            min-height: 100vh;
+        }
+
+        /* Stats */
+        .admin-stats {
+            display: flex;
+            justify-content: center;
+            margin-bottom: var(--space-xl);
+        }
+
+        .admin-stat {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .admin-stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: var(--space-xs);
+        }
+
+        .admin-stat-label {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: var(--space-sm) var(--space-lg);
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition-normal);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            font-family: 'Outfit', sans-serif;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn-danger {
+            background: #ff4757;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #ff3838;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #ffa502;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #ff7f00;
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: var(--space-xs) var(--space-sm);
+            font-size: 0.9rem;
+        }
+
+        /* Actions */
+        .admin-actions {
+            display: flex;
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+            flex-wrap: wrap;
+        }
+
+        /* Portfolio Grid */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .portfolio-item-admin {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: var(--transition-normal);
+            position: relative;
+        }
+
+        .portfolio-item-admin:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-primary);
+        }
+
+        .platform-badge {
+            position: absolute;
+            top: var(--space-md);
+            right: var(--space-md);
+            background: rgba(255, 255, 255, 0.9);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .item-actions {
+            position: absolute;
+            top: var(--space-md);
+            left: var(--space-md);
+            display: flex;
+            gap: var(--space-xs);
+            z-index: 2;
+        }
+
+        .portfolio-img-admin {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .portfolio-img-admin img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition-normal);
+        }
+
+        .portfolio-item-admin:hover .portfolio-img-admin img {
+            transform: scale(1.05);
+        }
+
+        .portfolio-content-admin {
+            padding: var(--space-lg);
+        }
+
+        .portfolio-content-admin h3 {
+            margin-bottom: var(--space-xs);
+            color: var(--text-primary);
+            font-size: 1.2rem;
+        }
+
+        .portfolio-content-admin p {
+            color: var(--text-secondary);
+            margin-bottom: var(--space-md);
+            line-height: 1.5;
+        }
+
+        .portfolio-meta-admin {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--space-md);
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .portfolio-platform-admin {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        .portfolio-date-admin {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Modal Styles */
+        .modal-admin {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-admin.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content-admin {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-admin.show .modal-content-admin {
+            transform: translateY(0);
+        }
+
+        .modal-header-admin {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header-admin h3 {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .close-btn-admin {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition-fast);
+        }
+
+        .close-btn-admin:hover {
+            background: var(--bg-primary);
+            color: var(--accent-primary);
+        }
+
+        .modal-body-admin {
+            padding: var(--space-lg);
+        }
+
+        .form-group-admin {
+            margin-bottom: var(--space-lg);
+        }
+
+        .form-group-admin label {
+            display: block;
+            margin-bottom: var(--space-xs);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .form-group-admin input,
+        .form-group-admin textarea {
+            width: 100%;
+            padding: var(--space-md);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            transition: var(--transition-normal);
+        }
+
+        .form-group-admin input:focus,
+        .form-group-admin textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .form-group-admin textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .url-note-admin {
+            color: var(--accent-primary);
+            margin-top: var(--space-xs);
+            font-size: 0.8rem;
+            display: block;
+        }
+
+        .modal-actions-admin {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: flex-end;
+            padding: var(--space-lg);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .auto-fill-info {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-bottom: var(--space-lg);
+            font-size: 0.9rem;
+            color: var(--accent-primary);
+        }
+
+        /* Empty State */
+        .empty-state-admin {
+            text-align: center;
+            padding: var(--space-xxl);
+            grid-column: 1 / -1;
+        }
+
+        .empty-state-admin i {
+            font-size: 4rem;
+            color: var(--accent-primary);
+            margin-bottom: var(--space-lg);
+            opacity: 0.7;
+        }
+
+        .empty-state-admin h3 {
+            margin-bottom: var(--space-md);
+            color: var(--text-primary);
+        }
+
+        .empty-state-admin p {
+            color: var(--text-secondary);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition-fast);
+        }
+
+        .back-btn:hover {
+            color: var(--accent-primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-actions {
+                flex-direction: column;
+            }
+            
+            .admin-stat {
+                min-width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <nav class="container">
+            <div class="logo">[Nama Teman] - Admin</div>
+            <div style="display: flex; align-items: center; gap: var(--space-lg);">
+                <a href="index.html" class="back-btn">
+                    <i class="fas fa-home"></i>
+                    Back to Site
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Admin Main Content -->
+    <main class="admin-main">
+        <div class="container">
+            <!-- Stats -->
+            <div class="admin-stats">
+                <div class="admin-stat">
+                    <div class="admin-stat-number" id="totalProjects">0</div>
+                    <div class="admin-stat-label">Total Projects</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="admin-actions">
+                <button class="btn btn-primary" onclick="showAddForm()">
+                    <i class="fas fa-plus"></i>
+                    Add New Project
+                </button>
+                <button class="btn btn-secondary" onclick="loadPortfolioProjects()">
+                    <i class="fas fa-sync-alt"></i>
+                    Refresh
+                </button>
+            </div>
+
+            <!-- Portfolio Grid -->
+            <div class="portfolio-grid" id="portfolioGridAdmin">
+                <!-- Portfolio items will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Project Modal -->
+    <div id="addProjectModal" class="modal-admin">
+        <div class="modal-content-admin">
+            <div class="modal-header-admin">
+                <h3>Add New Project</h3>
+                <button class="close-btn-admin" onclick="hideAddForm()">&times;</button>
+            </div>
+            <div class="modal-body-admin">
+                <div class="auto-fill-info">
+                    <i class="fas fa-magic"></i>
+                    Just paste the URL - title & description will be auto-filled!
+                </div>
+                <div class="form-group-admin">
+                    <label for="projectUrl">Project URL *</label>
+                    <input type="url" id="projectUrl" placeholder="https://www.youtube.com/watch?v=..." 
+                           oninput="handleUrlInput()">
+                    <span class="url-note-admin">
+                        <i class="fas fa-info-circle"></i> YouTube, Instagram, TikTok, Facebook, Twitter
+                    </span>
+                </div>
+                <!-- Title dan Description dihapus - akan auto generate -->
+            </div>
+            <div class="modal-actions-admin">
+                <button class="btn btn-secondary" onclick="hideAddForm()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveProject()" id="saveBtn">
+                    <i class="fas fa-save"></i>
+                    Save Project
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ==========================================
+        // SUPABASE CONFIGURATION - GANTI DENGAN AKUN TEMAN LU
+        // ==========================================
+        const supabaseUrl = 'https://YOUR-NEW-SUPABASE-PROJECT.supabase.co';
+        const supabaseKey = 'YOUR-NEW-SUPABASE-ANON-KEY';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    </script>
+    <script src="portfolio.js"></script>
+</body>
+</html>
