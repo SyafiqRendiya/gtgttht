@@ -234,3 +234,40 @@ document.addEventListener('visibilitychange', function() {
     }
 });
 
+// Ini yang bisa lu pake SEKARANG tanpa API
+function autoFillFromURL(url) {
+    const platform = getPlatformFromUrl(url);
+    
+    // Default values based on platform
+    const defaults = {
+        'YouTube': {
+            title: `YouTube Video - ${new Date().toLocaleDateString()}`,
+            description: 'Check out this amazing video content! 🎬'
+        },
+        'TikTok': {
+            title: `TikTok Video - ${new Date().toLocaleDateString()}`,
+            description: 'Viral TikTok content that engages audience! ✨'
+        },
+        'Instagram': {
+            title: `Instagram Post - ${new Date().toLocaleDateString()}`,
+            description: 'Creative Instagram content that stands out! 📸'
+        },
+        'Facebook': {
+            title: `Facebook Video - ${new Date().toLocaleDateString()}`,
+            description: 'Engaging Facebook video content! 👍'
+        }
+    };
+    
+    return defaults[platform] || {
+        title: `My Project - ${new Date().toLocaleDateString()}`,
+        description: 'Amazing content created with passion and creativity! 🚀'
+    };
+}
+
+function getPlatformFromUrl(url) {
+    if (url.includes('youtube.com') || url.includes('youtu.be')) return 'YouTube';
+    if (url.includes('tiktok.com')) return 'TikTok';
+    if (url.includes('instagram.com')) return 'Instagram';
+    if (url.includes('facebook.com')) return 'Facebook';
+    return 'Website';
+}
