@@ -233,3 +233,4 @@ document.addEventListener('visibilitychange', function() {
         loadPortfolioProjects();
     }
 });
+
