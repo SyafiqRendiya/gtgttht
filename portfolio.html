@@ -227,6 +227,49 @@
             font-weight: 600;
         }
 
+        /* FOLDER SECTIONS - BARU DITAMBAHIN */
+        .folder-section {
+            margin-bottom: 60px;
+        }
+
+        .folder-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .folder-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .folder-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .folder-count {
+            background: var(--bg-card);
+            color: var(--text-gray);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid var(--border);
+        }
+
         /* Portfolio Grid - DIKECILKAN GAP NYA */
         .portfolio-section {
             padding: 40px 0 80px;
@@ -235,7 +278,25 @@
         .portfolio-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 20px; /* DIKURANGI DARI 30px JADI 20px */
+            gap: 20px;
+            position: relative;
+        }
+
+        .portfolio-grid.collapsed {
+            max-height: 800px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .portfolio-grid.collapsed::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: linear-gradient(transparent, var(--bg-dark));
+            pointer-events: none;
         }
 
         .portfolio-item {
@@ -364,10 +425,62 @@
             font-size: 0.8rem;
         }
 
+        /* SHOW MORE BUTTON - BARU DITAMBAHIN */
+        .show-more-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            padding-top: 20px;
+        }
+
+        .show-more-btn {
+            background: var(--bg-card);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .show-more-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .empty-folder {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-card);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            color: var(--text-gray);
+        }
+
+        .empty-folder i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .empty-folder h3 {
+            margin-bottom: 10px;
+            color: var(--text-white);
+        }
+
+        .empty-folder p {
+            color: var(--text-gray);
+        }
+
         .empty-portfolio {
             text-align: center;
             padding: 80px 20px;
-            grid-column: 1 / -1;
         }
 
         .empty-portfolio i {
@@ -468,7 +581,7 @@
             color: var(--text-gray);
         }
 
-        /* VIDEO PLAYER MODAL - DIPERBAIKI */
+        /* VIDEO PLAYER MODAL */
         .video-player-modal {
             display: none;
             position: fixed;
@@ -569,7 +682,7 @@
             height: 100%;
         }
         
-        /* VIDEO VERTICAL (SHORTS/TIKTOK) - DIPERBAIKI */
+        /* VIDEO VERTICAL (SHORTS/TIKTOK) */
         .video-embed-container.is-vertical {
             height: 80vh;
             max-height: 700px;
@@ -637,6 +750,16 @@
             .back-btn, .refresh-btn {
                 padding: 6px 12px;
                 font-size: 0.9rem;
+            }
+
+            .folder-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .portfolio-grid.collapsed {
+                max-height: 600px;
             }
         }
 
@@ -708,15 +831,15 @@
         </div>
     </div>
 
-    <!-- Portfolio Section -->
+    <!-- Portfolio Section dengan Folder Grouping -->
     <section class="portfolio-section">
         <div class="container">
-            <!-- Portfolio Grid -->
-            <div class="portfolio-grid" id="portfolioGrid">
+            <!-- Folder Sections akan di-load di sini -->
+            <div id="folderSections">
                 <div class="empty-portfolio">
                     <i class="fas fa-film"></i>
-                    <h3>Belum Ada Project</h3>
-                    <p>Project akan muncul di sini setelah ditambahkan melalui admin panel</p>
+                    <h3>Loading Projects...</h3>
+                    <p>Sedang memuat portfolio...</p>
                 </div>
             </div>
         </div>
@@ -766,7 +889,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // ==========================================
-        // SUPABASE CONFIGURATION - FIXED
+        // SUPABASE CONFIGURATION
         // ==========================================
         const SUPABASE_URL = 'https://bqmsfhnojmmaouaweixi.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxbXNmaG5vam1tYW91YXdlaXhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNjg3ODAsImV4cCI6MjA3OTc0NDc4MH0.SOU9dUdJqWwa4BWW0qgbdIRiZNV8uH2v_654f_Puqa8';
@@ -776,9 +899,34 @@
         // GLOBAL VARIABLES
         // ==========================================
         let allProjects = [];
+        const folderStates = {};
+
+        // Folder definitions
+        const PROJECT_FOLDERS = [
+            { 
+                name: 'Motion Graphics', 
+                icon: 'fas fa-film',
+                description: 'Animasi dan motion graphics projects'
+            },
+            { 
+                name: 'Long Video', 
+                icon: 'fas fa-video',
+                description: 'Video panjang lebih dari 5 menit'
+            },
+            { 
+                name: 'Short Video', 
+                icon: 'fas fa-clapperboard',
+                description: 'Video pendek dan konten sosial media'
+            },
+            { 
+                name: 'Timeline Preview', 
+                icon: 'fas fa-play-circle',
+                description: 'Preview dan rough cut videos'
+            }
+        ];
 
         // ==========================================
-        // PORTFOLIO FUNCTIONS - PUBLIC VIEW
+        // PORTFOLIO FUNCTIONS - PUBLIC VIEW DENGAN FOLDER
         // ==========================================
 
         // Load semua projects dari database
@@ -796,7 +944,7 @@
                 allProjects = projects || [];
                 console.log(`✅ Loaded ${allProjects.length} projects`);
                 
-                renderProjects(allProjects);
+                renderFolderProjects(allProjects);
                 updateStats(allProjects);
                 
             } catch (error) {
@@ -842,53 +990,143 @@
             }, 30);
         }
 
-        // Render projects ke grid
-        function renderProjects(projects) {
-            const portfolioGrid = document.getElementById('portfolioGrid');
-            if (!portfolioGrid) return;
+        // Render projects dengan grouping folder
+        function renderFolderProjects(projects) {
+            const folderSections = document.getElementById('folderSections');
+            if (!folderSections) return;
             
             if (projects.length === 0) {
                 showEmptyPortfolio();
                 return;
             }
             
-            portfolioGrid.innerHTML = '';
+            folderSections.innerHTML = '';
+            
+            // Group projects by folder
+            const projectsByFolder = groupProjectsByFolder(projects);
+            
+            // Create sections for each folder
+            PROJECT_FOLDERS.forEach(folder => {
+                const folderProjects = projectsByFolder[folder.name] || [];
+                const folderSection = createFolderSection(folder, folderProjects);
+                folderSections.appendChild(folderSection);
+            });
+        }
+
+        // Group projects by folder
+        function groupProjectsByFolder(projects) {
+            const grouped = {};
             
             projects.forEach(project => {
-                const projectElement = createProjectElement(project);
-                portfolioGrid.appendChild(projectElement);
+                const folderName = project.folder || 'Uncategorized';
+                if (!grouped[folderName]) {
+                    grouped[folderName] = [];
+                }
+                grouped[folderName].push(project);
             });
+            
+            return grouped;
+        }
+
+        // Create folder section dengan show more functionality
+        function createFolderSection(folder, projects) {
+            const section = document.createElement('div');
+            section.className = 'folder-section';
+            section.id = `folder-${folder.name.replace(/\s+/g, '-').toLowerCase()}`;
+            
+            const isExpanded = folderStates[folder.name] || false;
+            
+            // Tampilkan 12 project pertama ketika collapsed, semua ketika expanded
+            const visibleProjects = isExpanded ? projects : projects.slice(0, 12);
+            const hasMoreProjects = projects.length > 12;
+            const remainingProjects = projects.length - 12;
+            
+            section.innerHTML = `
+                <div class="folder-header">
+                    <div class="folder-icon">
+                        <i class="${folder.icon}"></i>
+                    </div>
+                    <h2 class="folder-title">${folder.name}</h2>
+                    <div class="folder-count">${projects.length} Projects</div>
+                </div>
+                
+                ${projects.length > 0 ? `
+                    <div class="portfolio-grid ${!isExpanded && hasMoreProjects ? 'collapsed' : ''}">
+                        ${visibleProjects.map(project => createProjectElement(project)).join('')}
+                    </div>
+                    
+                    ${hasMoreProjects ? `
+                        <div class="show-more-container">
+                            <button class="show-more-btn" onclick="toggleFolder('${folder.name}')">
+                                <i class="fas fa-${isExpanded ? 'eye-slash' : 'eye'}"></i>
+                                ${isExpanded ? 'Show Less' : `Show All Projects (${projects.length})`}
+                            </button>
+                        </div>
+                    ` : ''}
+                ` : `
+                    <div class="empty-folder">
+                        <i class="fas fa-video-slash"></i>
+                        <h3>Belum Ada Project</h3>
+                        <p>Project di folder ${folder.name} akan muncul di sini</p>
+                    </div>
+                `}
+            `;
+            
+            return section;
+        }
+
+        // Toggle folder expanded/collapsed
+        function toggleFolder(folderName) {
+            // Toggle folder state
+            folderStates[folderName] = !folderStates[folderName];
+            
+            // Dapatkan projects untuk folder ini
+            const projectsByFolder = groupProjectsByFolder(allProjects);
+            const folderProjects = projectsByFolder[folderName] || [];
+            
+            // Update folder section
+            const folderSection = document.getElementById(`folder-${folderName.replace(/\s+/g, '-').toLowerCase()}`);
+            if (folderSection) {
+                const newSection = createFolderSection(
+                    PROJECT_FOLDERS.find(f => f.name === folderName),
+                    folderProjects
+                );
+                folderSection.parentNode.replaceChild(newSection, folderSection);
+                
+                // Scroll ke folder setelah update
+                setTimeout(() => {
+                    newSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }
         }
 
         // Buat element project
         function createProjectElement(project) {
-            const element = document.createElement('div');
-            element.className = 'portfolio-item';
-            
             const badgeClass = getBadgeClass(project.platform);
             const actionButton = createActionButton(project);
             
-            element.innerHTML = `
-                <div class="portfolio-img">
-                    <img src="${project.image_url}" alt="${project.title}" loading="lazy" 
-                         onerror="this.src='https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=225&fit=crop'">
-                    <div class="portfolio-overlay">
-                        <div class="platform-badge ${badgeClass}">
-                            <i class="${project.platform_icon}"></i>
+            return `
+                <div class="portfolio-item">
+                    <div class="portfolio-img">
+                        <img src="${project.image_url}" alt="${project.title}" loading="lazy" 
+                             onerror="this.src='https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=225&fit=crop'">
+                        <div class="portfolio-overlay">
+                            <div class="platform-badge ${badgeClass}">
+                                <i class="${project.platform_icon}"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="portfolio-content">
+                        <h3>${project.title}</h3>
+                        <p>${project.description}</p>
+                        <div class="portfolio-meta">
+                            ${actionButton}
+                            <span class="portfolio-date">${formatDate(project.created_at)}</span>
                         </div>
                     </div>
                 </div>
-                
-                <div class="portfolio-content">
-                    <h3>${project.title}</h3>
-                    <p>${project.description}</p>
-                    <div class="portfolio-meta">
-                        ${actionButton}
-                        <span class="portfolio-date">${formatDate(project.created_at)}</span>
-                    </div>
-                </div>
             `;
-            return element;
         }
 
         // Buat action button berdasarkan platform
@@ -926,10 +1164,10 @@
         }
 
         function showEmptyPortfolio() {
-            const portfolioGrid = document.getElementById('portfolioGrid');
-            if (!portfolioGrid) return;
+            const folderSections = document.getElementById('folderSections');
+            if (!folderSections) return;
             
-            portfolioGrid.innerHTML = `
+            folderSections.innerHTML = `
                 <div class="empty-portfolio">
                     <i class="fas fa-film"></i>
                     <h3>Belum Ada Project</h3>
@@ -948,7 +1186,7 @@
         }
 
         // ==========================================
-        // VIDEO PLAYER FUNCTIONS - DIPERBAIKI
+        // VIDEO PLAYER FUNCTIONS
         // ==========================================
 
         function showVideoPlayer(title, url, platform) {
@@ -1083,7 +1321,7 @@
         // ==========================================
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Portfolio Public initialized');
+            console.log('🚀 Portfolio Public dengan Folder Grouping initialized');
             loadAllProjects();
             
             // Navbar scroll effect
