@@ -1,10 +1,10 @@
 /**
- * Portfolio Manager - Public Version
- * Hanya bisa melihat project, TIDAK BISA edit/hapus
+ * Portfolio Manager - Public Version dengan Folder Grouping
+ * Hanya bisa melihat project dengan grouping folder + show more
  */
 
 // ==========================================
-// SUPABASE CONFIGURATION - FIXED
+// SUPABASE CONFIGURATION
 // ==========================================
 const SUPABASE_URL = 'https://bqmsfhnojmmaouaweixi.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxbXNmaG5vam1tYW91YXdlaXhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNjg3ODAsImV4cCI6MjA3OTc0NDc4MH0.SOU9dUdJqWwa4BWW0qgbdIRiZNV8uH2v_654f_Puqa8';
@@ -14,11 +14,37 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 // GLOBAL VARIABLES
 // ==========================================
 let allProjects = [];
+const folderStates = {};
+
+// Folder definitions
+const PROJECT_FOLDERS = [
+    { 
+        name: 'Motion Graphics', 
+        icon: 'fas fa-film',
+        description: 'Animasi dan motion graphics projects'
+    },
+    { 
+        name: 'Long Video', 
+        icon: 'fas fa-video',
+        description: 'Video panjang lebih dari 5 menit'
+    },
+    { 
+        name: 'Short Video', 
+        icon: 'fas fa-clapperboard',
+        description: 'Video pendek dan konten sosial media'
+    },
+    { 
+        name: 'Timeline Preview', 
+        icon: 'fas fa-play-circle',
+        description: 'Preview dan rough cut videos'
+    }
+];
 
 // ==========================================
-// PORTFOLIO FUNCTIONS - PUBLIC VIEW
+// PORTFOLIO FUNCTIONS - PUBLIC VIEW DENGAN FOLDER
 // ==========================================
 
+// Load semua projects dari database
 async function loadAllProjects() {
     try {
         console.log('🔄 Loading projects from database...');
@@ -33,7 +59,7 @@ async function loadAllProjects() {
         allProjects = projects || [];
         console.log(`✅ Loaded ${allProjects.length} projects`);
         
-        renderProjects(allProjects);
+        renderFolderProjects(allProjects);
         updateStats(allProjects);
         
     } catch (error) {
@@ -42,7 +68,7 @@ async function loadAllProjects() {
     }
 }
 
-// FUNCTION REFRESH BARU DITAMBAHIN
+// Function refresh portfolio
 async function refreshPortfolio() {
     const btn = document.querySelector('.refresh-btn');
     if (btn) {
@@ -60,13 +86,13 @@ async function refreshPortfolio() {
     }, 1000);
 }
 
+// Update statistik - hanya total project
 function updateStats(projects) {
     const total = projects.length;
-    
-    // HANYA update total projects
     animateCount('totalProjects', total);
 }
 
+// Animasi counting
 function animateCount(elementId, target) {
     const element = document.getElementById(elementId);
     if (!element) return;
@@ -83,114 +109,187 @@ function animateCount(elementId, target) {
     }, 30);
 }
 
-function renderProjects(projects) {
-    const portfolioGrid = document.getElementById('portfolioGrid');
-    
-    if (!portfolioGrid) {
-        console.error('Portfolio grid element not found!');
-        return;
-    }
+// Render projects dengan grouping folder
+function renderFolderProjects(projects) {
+    const folderSections = document.getElementById('folderSections');
+    if (!folderSections) return;
     
     if (projects.length === 0) {
         showEmptyPortfolio();
         return;
     }
     
-    portfolioGrid.innerHTML = '';
+    folderSections.innerHTML = '';
     
-    projects.forEach(project => {
-        const projectElement = createProjectElement(project);
-        portfolioGrid.appendChild(projectElement);
+    // Group projects by folder
+    const projectsByFolder = groupProjectsByFolder(projects);
+    
+    // Create sections for each folder
+    PROJECT_FOLDERS.forEach(folder => {
+        const folderProjects = projectsByFolder[folder.name] || [];
+        const folderSection = createFolderSection(folder, folderProjects);
+        folderSections.appendChild(folderSection);
     });
 }
 
-function createProjectElement(project) {
-    const element = document.createElement('div');
-    element.className = 'portfolio-item';
+// Group projects by folder
+function groupProjectsByFolder(projects) {
+    const grouped = {};
     
-    let actionButton;
-    let badgeClass = getBadgeClass(project.platform);
-    let actionIcon = getActionIcon(project.platform);
-    let actionText = getActionText(project.platform);
+    projects.forEach(project => {
+        const folderName = project.folder || 'Uncategorized';
+        if (!grouped[folderName]) {
+            grouped[folderName] = [];
+        }
+        grouped[folderName].push(project);
+    });
     
-    // Determine action based on platform
-    if (project.platform === 'YouTube' || project.platform === 'TikTok') {
-        actionButton = `
-            <button class="portfolio-link" 
-                    onclick="showVideoPlayer('${project.title.replace(/'/g, "\\'")}', '${project.url}', '${project.platform}')"
-                    style="background: none; border: none; cursor: pointer; color: var(--primary); font-family: inherit; padding: 0; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
-                <i class="${actionIcon}"></i> ${actionText}
-            </button>
-        `;
-    } else {
-        actionButton = `
-            <a href="${project.url}" target="_blank" class="portfolio-link">
-                <i class="${actionIcon}"></i> ${actionText}
-            </a>
-        `;
+    return grouped;
+}
+
+// Create folder section dengan show more functionality
+function createFolderSection(folder, projects) {
+    const section = document.createElement('div');
+    section.className = 'folder-section';
+    section.id = `folder-${folder.name.replace(/\s+/g, '-').toLowerCase()}`;
+    
+    const isExpanded = folderStates[folder.name] || false;
+    
+    // Tampilkan 12 project pertama ketika collapsed, semua ketika expanded
+    const visibleProjects = isExpanded ? projects : projects.slice(0, 12);
+    const hasMoreProjects = projects.length > 12;
+    
+    section.innerHTML = `
+        <div class="folder-header">
+            <div class="folder-icon">
+                <i class="${folder.icon}"></i>
+            </div>
+            <h2 class="folder-title">${folder.name}</h2>
+            <div class="folder-count">${projects.length} Projects</div>
+        </div>
+        
+        ${projects.length > 0 ? `
+            <div class="portfolio-grid ${!isExpanded && hasMoreProjects ? 'collapsed' : ''}">
+                ${visibleProjects.map(project => createProjectElement(project)).join('')}
+            </div>
+            
+            ${hasMoreProjects ? `
+                <div class="show-more-container">
+                    <button class="show-more-btn" onclick="toggleFolder('${folder.name}')">
+                        <i class="fas fa-${isExpanded ? 'eye-slash' : 'eye'}"></i>
+                        ${isExpanded ? 'Show Less' : `Show All Projects (${projects.length})`}
+                    </button>
+                </div>
+            ` : ''}
+        ` : `
+            <div class="empty-folder">
+                <i class="fas fa-video-slash"></i>
+                <h3>Belum Ada Project</h3>
+                <p>Project di folder ${folder.name} akan muncul di sini</p>
+            </div>
+        `}
+    `;
+    
+    return section;
+}
+
+// Toggle folder expanded/collapsed
+function toggleFolder(folderName) {
+    console.log('🔧 Toggle folder:', folderName);
+    
+    // Toggle folder state
+    folderStates[folderName] = !folderStates[folderName];
+    
+    // Dapatkan projects untuk folder ini
+    const projectsByFolder = groupProjectsByFolder(allProjects);
+    const folderProjects = projectsByFolder[folderName] || [];
+    
+    console.log(`📁 Projects for ${folderName}:`, folderProjects.length);
+    
+    // Update folder section
+    const folderSection = document.getElementById(`folder-${folderName.replace(/\s+/g, '-').toLowerCase()}`);
+    if (folderSection) {
+        const newSection = createFolderSection(
+            PROJECT_FOLDERS.find(f => f.name === folderName),
+            folderProjects
+        );
+        folderSection.parentNode.replaceChild(newSection, folderSection);
+        
+        // Scroll ke folder setelah update
+        setTimeout(() => {
+            newSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
     }
+}
+
+// Buat element project
+function createProjectElement(project) {
+    const badgeClass = getBadgeClass(project.platform);
+    const actionButton = createActionButton(project);
     
-    element.innerHTML = `
-        <div class="portfolio-img">
-            <img src="${project.image_url}" alt="${project.title}" loading="lazy" 
-                 onerror="this.src='https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=225&fit=crop'">
-            <div class="portfolio-overlay">
-                <div class="platform-badge ${badgeClass}">
-                    <i class="${project.platform_icon}"></i>
+    return `
+        <div class="portfolio-item">
+            <div class="portfolio-img">
+                <img src="${project.image_url}" alt="${project.title}" loading="lazy" 
+                     onerror="this.src='https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=225&fit=crop'">
+                <div class="portfolio-overlay">
+                    <div class="platform-badge ${badgeClass}">
+                        <i class="${project.platform_icon}"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="portfolio-content">
+                <h3>${project.title}</h3>
+                <p>${project.description}</p>
+                <div class="portfolio-meta">
+                    ${actionButton}
+                    <span class="portfolio-date">${formatDate(project.created_at)}</span>
                 </div>
             </div>
         </div>
-        
-        <div class="portfolio-content">
-            <h3>${project.title}</h3>
-            <p>${project.description}</p>
-            <div class="portfolio-meta">
-                ${actionButton}
-                <span class="portfolio-date">${formatDate(project.created_at)}</span>
-            </div>
-        </div>
     `;
-    return element;
 }
 
+// Buat action button berdasarkan platform
+function createActionButton(project) {
+    if (project.platform === 'YouTube' || project.platform === 'TikTok') {
+        const buttonText = project.platform === 'YouTube' ? 'Watch Video' : 'Watch TikTok';
+        const buttonIcon = project.platform === 'YouTube' ? 'fa-play-circle' : 'fa-music';
+        
+        return `
+            <button class="portfolio-link" 
+                    onclick="showVideoPlayer('${project.title.replace(/'/g, "\\'")}', '${project.url}', '${project.platform}')"
+                    style="background: none; border: none; cursor: pointer; color: var(--primary); font-family: inherit; padding: 0; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
+                <i class="fas ${buttonIcon}"></i> ${buttonText}
+            </button>
+        `;
+    } else {
+        return `
+            <a href="${project.url}" target="_blank" class="portfolio-link">
+                <i class="${project.platform_icon}"></i> View on ${project.platform}
+            </a>
+        `;
+    }
+}
+
+// Helper functions
 function getBadgeClass(platform) {
-    const badgeClasses = {
+    const classes = {
         'YouTube': 'youtube-badge',
         'TikTok': 'tiktok-badge',
         'Instagram': 'instagram-badge',
         'Facebook': 'facebook-badge',
         'Twitter': 'twitter-badge'
     };
-    return badgeClasses[platform] || 'website-badge';
-}
-
-function getActionIcon(platform) {
-    const actionIcons = {
-        'YouTube': 'fas fa-play-circle',
-        'TikTok': 'fas fa-music',
-        'Instagram': 'fas fa-camera',
-        'Facebook': 'fab fa-facebook',
-        'Twitter': 'fab fa-twitter'
-    };
-    return actionIcons[platform] || 'fas fa-external-link-alt';
-}
-
-function getActionText(platform) {
-    const actionTexts = {
-        'YouTube': 'Watch Video',
-        'TikTok': 'Watch TikTok',
-        'Instagram': 'View Post',
-        'Facebook': 'View Post',
-        'Twitter': 'View Tweet'
-    };
-    return actionTexts[platform] || 'View Content';
+    return classes[platform] || 'website-badge';
 }
 
 function showEmptyPortfolio() {
-    const portfolioGrid = document.getElementById('portfolioGrid');
-    if (!portfolioGrid) return;
+    const folderSections = document.getElementById('folderSections');
+    if (!folderSections) return;
     
-    portfolioGrid.innerHTML = `
+    folderSections.innerHTML = `
         <div class="empty-portfolio">
             <i class="fas fa-film"></i>
             <h3>Belum Ada Project</h3>
@@ -209,7 +308,7 @@ function formatDate(dateString) {
 }
 
 // ==========================================
-// VIDEO PLAYER FUNCTIONS - DIPERBAIKI
+// VIDEO PLAYER FUNCTIONS
 // ==========================================
 
 function showVideoPlayer(title, url, platform) {
@@ -218,7 +317,6 @@ function showVideoPlayer(title, url, platform) {
     const container = document.getElementById('videoEmbedContainer');
     
     if (!modal || !titleElement || !container) {
-        console.error('Modal video player elements not found');
         window.open(url, '_blank');
         return;
     }
@@ -379,7 +477,7 @@ document.addEventListener('keydown', function(e) {
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Portfolio Public initialized');
+    console.log('🚀 Portfolio Public dengan Folder Grouping initialized');
     loadAllProjects();
     
     // Navbar scroll effect
