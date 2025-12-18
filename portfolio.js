@@ -1,37 +1,33 @@
 /**
  * Portfolio Manager - Public Version dengan Folder Grouping
+ * FIXED VERSION - Compatible dengan main site
  */
 
 // ==========================================
-// SUPABASE CONFIGURATION (CEK APAKAH SUDAH ADA)
+// SUPABASE CONFIGURATION - FIXED: SHARE INSTANCE
 // ==========================================
-let supabase;
+let portfolioSupabase = null;
 
-function initializeSupabase() {
-    try {
+function getPortfolioSupabase() {
+    if (!portfolioSupabase) {
         const SUPABASE_URL = 'https://bqmsfhnojmmaouaweixi.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxbXNmaG5vam1tYW91YXdlaXhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNjg3ODAsImV4cCI6MjA3OTc0NDc4MH0.SOU9dUdJqWwa4BWW0qgbdIRiZNV8uH2v_654f_Puqa8';
         
-        // Cek apakah supabase sudah diinisialisasi
-        if (window.supabase && window.supabase.createClient) {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            console.log('✅ Supabase initialized');
-            return supabase;
+        // Cek apakah sudah ada instance dari main site
+        if (window._supabaseClient) {
+            portfolioSupabase = window._supabaseClient;
+            console.log('✅ Using shared Supabase client from main site');
+        } else if (typeof supabase !== 'undefined' && supabase.createClient) {
+            // Buat instance baru jika tidak ada
+            portfolioSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            console.log('✅ Created new Supabase client for portfolio');
         } else {
             console.error('❌ Supabase library not loaded');
             return null;
         }
-    } catch (error) {
-        console.error('Error initializing Supabase:', error);
-        return null;
     }
+    return portfolioSupabase;
 }
-
-// Panggil inisialisasi saat pertama kali
-if (!window.supabaseClient) {
-    window.supabaseClient = initializeSupabase();
-}
-supabase = window.supabaseClient;
 
 // Folder definitions
 const PROJECT_FOLDERS = [
@@ -62,16 +58,17 @@ let allProjects = [];
 const folderStates = {};
 
 // ==========================================
-// PORTFOLIO FUNCTIONS
+// PORTFOLIO FUNCTIONS - FIXED
 // ==========================================
 
 async function loadAllProjects() {
     try {
         console.log('🔄 Loading projects from database...');
         
-        // Cek supabase
+        const supabase = getPortfolioSupabase();
         if (!supabase) {
             console.error('Supabase not initialized');
+            showConnectionError();
             return;
         }
         
@@ -80,7 +77,15 @@ async function loadAllProjects() {
             .select('*')
             .order('created_at', { ascending: false });
         
-        if (error) throw error;
+        if (error) {
+            console.error('Database error:', error);
+            if (error.code === '42P01') {
+                showTableError();
+            } else {
+                showError('Database error: ' + error.message);
+            }
+            return;
+        }
         
         allProjects = projects || [];
         console.log(`✅ Loaded ${allProjects.length} projects`);
@@ -90,37 +95,83 @@ async function loadAllProjects() {
         
     } catch (error) {
         console.error('Error loading projects:', error);
-        showEmptyPortfolio();
+        showError('Failed to load projects');
     }
 }
 
-// REFRESH FUNCTION - PASTIKAN INI ADA
+// REFRESH FUNCTION - FIXED
 async function refreshPortfolio() {
     console.log('🔄 Refreshing portfolio...');
     const btn = document.querySelector('.refresh-btn');
+    const originalHTML = btn ? btn.innerHTML : null;
+    
     if (btn) {
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
         btn.disabled = true;
     }
     
-    await loadAllProjects();
-    
-    setTimeout(() => {
+    try {
+        await loadAllProjects();
+    } finally {
         if (btn) {
-            btn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
-            btn.disabled = false;
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }, 500);
         }
-    }, 1000);
+    }
 }
 
+function showConnectionError() {
+    const folderSections = document.getElementById('folderSections');
+    if (folderSections) {
+        folderSections.innerHTML = `
+            <div class="empty-portfolio">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Database Connection Error</h3>
+                <p>Unable to connect to database. Please check your connection.</p>
+                <button onclick="refreshPortfolio()" style="margin-top: 20px; padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    Try Again
+                </button>
+            </div>
+        `;
+    }
+}
 
-// Update statistik - hanya total project
+function showTableError() {
+    const folderSections = document.getElementById('folderSections');
+    if (folderSections) {
+        folderSections.innerHTML = `
+            <div class="empty-portfolio">
+                <i class="fas fa-database"></i>
+                <h3>Table Not Found</h3>
+                <p>The "Portfolio" table does not exist in the database.</p>
+                <p style="color: var(--text-gray); font-size: 0.9rem; margin-top: 10px;">
+                    Please create the table in Supabase dashboard.
+                </p>
+            </div>
+        `;
+    }
+}
+
+function showError(message) {
+    const folderSections = document.getElementById('folderSections');
+    if (folderSections) {
+        folderSections.innerHTML = `
+            <div class="empty-portfolio">
+                <i class="fas fa-exclamation-circle"></i>
+                <h3>Error</h3>
+                <p>${message}</p>
+            </div>
+        `;
+    }
+}
+
 function updateStats(projects) {
     const total = projects.length;
     animateCount('totalProjects', total);
 }
 
-// Animasi counting
 function animateCount(elementId, target) {
     const element = document.getElementById(elementId);
     if (!element) return;
@@ -137,7 +188,6 @@ function animateCount(elementId, target) {
     }, 30);
 }
 
-// Render projects dengan grouping folder
 function renderFolderProjects(projects) {
     const folderSections = document.getElementById('folderSections');
     if (!folderSections) return;
@@ -160,7 +210,6 @@ function renderFolderProjects(projects) {
     });
 }
 
-// Group projects by folder
 function groupProjectsByFolder(projects) {
     const grouped = {};
     
@@ -175,7 +224,6 @@ function groupProjectsByFolder(projects) {
     return grouped;
 }
 
-// Create folder section dengan show more functionality
 function createFolderSection(folder, projects) {
     const section = document.createElement('div');
     section.className = 'folder-section';
@@ -221,7 +269,6 @@ function createFolderSection(folder, projects) {
     return section;
 }
 
-// Toggle folder expanded/collapsed
 function toggleFolder(folderName) {
     console.log('🔧 Toggle folder:', folderName);
     
@@ -250,7 +297,6 @@ function toggleFolder(folderName) {
     }
 }
 
-// Buat element project
 function createProjectElement(project) {
     const badgeClass = getBadgeClass(project.platform);
     const actionButton = createActionButton(project);
@@ -279,7 +325,6 @@ function createProjectElement(project) {
     `;
 }
 
-// Buat action button berdasarkan platform
 function createActionButton(project) {
     if (project.platform === 'YouTube' || project.platform === 'TikTok') {
         const buttonText = project.platform === 'YouTube' ? 'Watch Video' : 'Watch TikTok';
@@ -301,7 +346,6 @@ function createActionButton(project) {
     }
 }
 
-// Helper functions
 function getBadgeClass(platform) {
     const classes = {
         'YouTube': 'youtube-badge',
@@ -315,24 +359,28 @@ function getBadgeClass(platform) {
 
 function showEmptyPortfolio() {
     const folderSections = document.getElementById('folderSections');
-    if (!folderSections) return;
-    
-    folderSections.innerHTML = `
-        <div class="empty-portfolio">
-            <i class="fas fa-film"></i>
-            <h3>Belum Ada Project</h3>
-            <p>Project akan muncul di sini setelah ditambahkan melalui admin panel</p>
-        </div>
-    `;
+    if (folderSections) {
+        folderSections.innerHTML = `
+            <div class="empty-portfolio">
+                <i class="fas fa-film"></i>
+                <h3>Belum Ada Project</h3>
+                <p>Project akan muncul di sini setelah ditambahkan melalui admin panel</p>
+            </div>
+        `;
+    }
 }
 
 function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('id-ID', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('id-ID', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    } catch (e) {
+        return 'Recent';
+    }
 }
 
 // ==========================================
@@ -506,7 +554,11 @@ document.addEventListener('keydown', function(e) {
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Portfolio Public dengan Folder Grouping initialized');
-    loadAllProjects();
+    
+    // Tunggu Supabase library load
+    setTimeout(() => {
+        loadAllProjects();
+    }, 800);
     
     // Navbar scroll effect
     window.addEventListener('scroll', function() {
@@ -521,3 +573,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Make functions available globally
+window.refreshPortfolio = refreshPortfolio;
+window.toggleFolder = toggleFolder;
+window.showVideoPlayer = showVideoPlayer;
+window.hideVideoPlayer = hideVideoPlayer;
