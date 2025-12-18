@@ -1,10 +1,10 @@
 /**
  * Portfolio Manager - Public Version dengan Folder Grouping
- * FIXED VERSION - Compatible dengan main site
+ * COMPLETELY FIXED VERSION
  */
 
 // ==========================================
-// SUPABASE CONFIGURATION - FIXED: SHARE INSTANCE
+// SUPABASE CONFIGURATION - SIMPLE & RELIABLE
 // ==========================================
 let portfolioSupabase = null;
 
@@ -13,18 +13,9 @@ function getPortfolioSupabase() {
         const SUPABASE_URL = 'https://bqmsfhnojmmaouaweixi.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxbXNmaG5vam1tYW91YXdlaXhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNjg3ODAsImV4cCI6MjA3OTc0NDc4MH0.SOU9dUdJqWwa4BWW0qgbdIRiZNV8uH2v_654f_Puqa8';
         
-        // Cek apakah sudah ada instance dari main site
-        if (window._supabaseClient) {
-            portfolioSupabase = window._supabaseClient;
-            console.log('✅ Using shared Supabase client from main site');
-        } else if (typeof supabase !== 'undefined' && supabase.createClient) {
-            // Buat instance baru jika tidak ada
-            portfolioSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            console.log('✅ Created new Supabase client for portfolio');
-        } else {
-            console.error('❌ Supabase library not loaded');
-            return null;
-        }
+        // Always create new client - most reliable
+        portfolioSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        console.log('✅ Portfolio Supabase client created');
     }
     return portfolioSupabase;
 }
@@ -58,7 +49,7 @@ let allProjects = [];
 const folderStates = {};
 
 // ==========================================
-// PORTFOLIO FUNCTIONS - FIXED
+// PORTFOLIO FUNCTIONS - ULTIMATE FIX
 // ==========================================
 
 async function loadAllProjects() {
@@ -67,19 +58,65 @@ async function loadAllProjects() {
         
         const supabase = getPortfolioSupabase();
         if (!supabase) {
-            console.error('Supabase not initialized');
+            console.error('❌ Supabase not initialized');
             showConnectionError();
             return;
         }
         
-        const { data: projects, error } = await supabase
-            .from('Portfolio')
-            .select('*')
-            .order('created_at', { ascending: false });
+        // ===== FIX 1: Coba dengan QUOTES "Portfolio" =====
+        console.log('Trying table "Portfolio" (with quotes)...');
+        let projects = [];
+        let error = null;
+        
+        try {
+            // Query dengan quotes untuk case-sensitive
+            const result = await supabase
+                .from('"Portfolio"')  // ← PAKAI DOUBLE QUOTE!
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            projects = result.data || [];
+            error = result.error;
+            
+            if (error) {
+                console.log('Query with quotes failed:', error.message);
+                
+                // ===== FIX 2: Coba tanpa quotes =====
+                console.log('Trying table Portfolio (without quotes)...');
+                const result2 = await supabase
+                    .from('Portfolio')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                projects = result2.data || [];
+                error = result2.error;
+                
+                if (error) {
+                    console.log('Query without quotes failed:', error.message);
+                    
+                    // ===== FIX 3: Coba lowercase =====
+                    console.log('Trying table portfolio (lowercase)...');
+                    const result3 = await supabase
+                        .from('portfolio')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+                    
+                    projects = result3.data || [];
+                    error = result3.error;
+                }
+            }
+        } catch (fetchError) {
+            console.error('Fetch error:', fetchError);
+            error = fetchError;
+        }
         
         if (error) {
-            console.error('Database error:', error);
-            if (error.code === '42P01') {
+            console.error('❌ All queries failed:', error);
+            
+            // Cek apakah error karena RLS
+            if (error.message && error.message.includes('permission')) {
+                showError('RLS (Row Level Security) aktif. Silakan nonaktifkan RLS di Supabase dashboard.');
+            } else if (error.code === '42P01') {
                 showTableError();
             } else {
                 showError('Database error: ' + error.message);
@@ -88,18 +125,34 @@ async function loadAllProjects() {
         }
         
         allProjects = projects || [];
-        console.log(`✅ Loaded ${allProjects.length} projects`);
+        console.log(`✅ FINAL: Loaded ${allProjects.length} projects`);
         
-        renderFolderProjects(allProjects);
-        updateStats(allProjects);
+        if (allProjects.length === 0) {
+            console.log('⚠️ Table found but empty');
+            showEmptyPortfolio();
+        } else {
+            // Debug: Show first project structure
+            console.log('First project structure:', allProjects[0]);
+            
+            renderFolderProjects(allProjects);
+            updateStats(allProjects);
+            
+            // Show success message
+            setTimeout(() => {
+                const statsEl = document.getElementById('totalProjects');
+                if (statsEl && statsEl.textContent > 0) {
+                    console.log('🎉 PORTFOLIO SUCCESSFULLY LOADED!');
+                }
+            }, 1000);
+        }
         
     } catch (error) {
-        console.error('Error loading projects:', error);
-        showError('Failed to load projects');
+        console.error('❌ Error loading projects:', error);
+        showError('Failed to load projects: ' + error.message);
     }
 }
 
-// REFRESH FUNCTION - FIXED
+// REFRESH FUNCTION
 async function refreshPortfolio() {
     console.log('🔄 Refreshing portfolio...');
     const btn = document.querySelector('.refresh-btn');
@@ -214,6 +267,7 @@ function groupProjectsByFolder(projects) {
     const grouped = {};
     
     projects.forEach(project => {
+        // Handle null/undefined folder
         const folderName = project.folder || 'Uncategorized';
         if (!grouped[folderName]) {
             grouped[folderName] = [];
@@ -298,24 +352,32 @@ function toggleFolder(folderName) {
 }
 
 function createProjectElement(project) {
-    const badgeClass = getBadgeClass(project.platform);
+    // Safe defaults untuk semua field
+    const title = project.title || 'Untitled Project';
+    const description = project.description || 'No description available';
+    const url = project.url || '#';
+    const imageUrl = project.image_url || 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=225&fit=crop';
+    const platform = project.platform || 'Website';
+    const platformIcon = project.platform_icon || getDefaultPlatformIcon(platform);
+    
+    const badgeClass = getBadgeClass(platform);
     const actionButton = createActionButton(project);
     
     return `
         <div class="portfolio-item">
             <div class="portfolio-img">
-                <img src="${project.image_url}" alt="${project.title}" loading="lazy" 
+                <img src="${imageUrl}" alt="${title}" loading="lazy" 
                      onerror="this.src='https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=225&fit=crop'">
                 <div class="portfolio-overlay">
                     <div class="platform-badge ${badgeClass}">
-                        <i class="${project.platform_icon}"></i>
+                        <i class="${platformIcon}"></i>
                     </div>
                 </div>
             </div>
             
             <div class="portfolio-content">
-                <h3>${project.title}</h3>
-                <p>${project.description}</p>
+                <h3>${title}</h3>
+                <p>${description}</p>
                 <div class="portfolio-meta">
                     ${actionButton}
                     <span class="portfolio-date">${formatDate(project.created_at)}</span>
@@ -325,22 +387,37 @@ function createProjectElement(project) {
     `;
 }
 
+function getDefaultPlatformIcon(platform) {
+    const icons = {
+        'YouTube': 'fab fa-youtube',
+        'TikTok': 'fab fa-tiktok',
+        'Instagram': 'fab fa-instagram',
+        'Facebook': 'fab fa-facebook',
+        'Twitter': 'fab fa-twitter',
+        'X': 'fab fa-x-twitter'
+    };
+    return icons[platform] || 'fas fa-globe';
+}
+
 function createActionButton(project) {
-    if (project.platform === 'YouTube' || project.platform === 'TikTok') {
-        const buttonText = project.platform === 'YouTube' ? 'Watch Video' : 'Watch TikTok';
-        const buttonIcon = project.platform === 'YouTube' ? 'fa-play-circle' : 'fa-music';
+    const platform = project.platform || 'Website';
+    const url = project.url || '#';
+    
+    if (platform === 'YouTube' || platform === 'TikTok') {
+        const buttonText = platform === 'YouTube' ? 'Watch Video' : 'Watch TikTok';
+        const buttonIcon = platform === 'YouTube' ? 'fa-play-circle' : 'fa-music';
         
         return `
             <button class="portfolio-link" 
-                    onclick="showVideoPlayer('${project.title.replace(/'/g, "\\'")}', '${project.url}', '${project.platform}')"
+                    onclick="showVideoPlayer('${project.title.replace(/'/g, "\\'")}', '${url}', '${platform}')"
                     style="background: none; border: none; cursor: pointer; color: var(--primary); font-family: inherit; padding: 0; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
                 <i class="fas ${buttonIcon}"></i> ${buttonText}
             </button>
         `;
     } else {
         return `
-            <a href="${project.url}" target="_blank" class="portfolio-link">
-                <i class="${project.platform_icon}"></i> View on ${project.platform}
+            <a href="${url}" target="_blank" class="portfolio-link">
+                <i class="${project.platform_icon || getDefaultPlatformIcon(platform)}"></i> View on ${platform}
             </a>
         `;
     }
@@ -352,7 +429,8 @@ function getBadgeClass(platform) {
         'TikTok': 'tiktok-badge',
         'Instagram': 'instagram-badge',
         'Facebook': 'facebook-badge',
-        'Twitter': 'twitter-badge'
+        'Twitter': 'twitter-badge',
+        'X': 'twitter-badge'
     };
     return classes[platform] || 'website-badge';
 }
@@ -372,6 +450,7 @@ function showEmptyPortfolio() {
 
 function formatDate(dateString) {
     try {
+        if (!dateString) return 'Recent';
         const date = new Date(dateString);
         return date.toLocaleDateString('id-ID', {
             year: 'numeric',
@@ -532,7 +611,7 @@ function extractTikTokVideoId(url) {
 }
 
 // ==========================================
-// EVENT LISTENERS
+// EVENT LISTENERS & INITIALIZATION
 // ==========================================
 
 // Close modals when clicking outside
@@ -547,10 +626,6 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// ==========================================
-// INITIALIZATION
-// ==========================================
-
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Portfolio Public dengan Folder Grouping initialized');
@@ -558,7 +633,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Tunggu Supabase library load
     setTimeout(() => {
         loadAllProjects();
-    }, 800);
+    }, 1000);
     
     // Navbar scroll effect
     window.addEventListener('scroll', function() {
@@ -571,6 +646,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+    
+    // Fix refresh button
+    const refreshBtn = document.querySelector('.refresh-btn');
+    if (refreshBtn) {
+        refreshBtn.onclick = refreshPortfolio;
+    }
 });
 
 // Make functions available globally
@@ -578,3 +659,4 @@ window.refreshPortfolio = refreshPortfolio;
 window.toggleFolder = toggleFolder;
 window.showVideoPlayer = showVideoPlayer;
 window.hideVideoPlayer = hideVideoPlayer;
+window.loadAllProjects = loadAllProjects;
