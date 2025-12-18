@@ -1,20 +1,37 @@
 /**
  * Portfolio Manager - Public Version dengan Folder Grouping
- * Hanya bisa melihat project dengan grouping folder + show more
  */
 
 // ==========================================
-// SUPABASE CONFIGURATION
+// SUPABASE CONFIGURATION (CEK APAKAH SUDAH ADA)
 // ==========================================
-const SUPABASE_URL = 'https://bqmsfhnojmmaouaweixi.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxbXNmaG5vam1tYW91YXdlaXhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNjg3ODAsImV4cCI6MjA3OTc0NDc4MH0.SOU9dUdJqWwa4BWW0qgbdIRiZNV8uH2v_654f_Puqa8';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let supabase;
 
-// ==========================================
-// GLOBAL VARIABLES
-// ==========================================
-let allProjects = [];
-const folderStates = {};
+function initializeSupabase() {
+    try {
+        const SUPABASE_URL = 'https://bqmsfhnojmmaouaweixi.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxbXNmaG5vam1tYW91YXdlaXhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNjg3ODAsImV4cCI6MjA3OTc0NDc4MH0.SOU9dUdJqWwa4BWW0qgbdIRiZNV8uH2v_654f_Puqa8';
+        
+        // Cek apakah supabase sudah diinisialisasi
+        if (window.supabase && window.supabase.createClient) {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            console.log('✅ Supabase initialized');
+            return supabase;
+        } else {
+            console.error('❌ Supabase library not loaded');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error initializing Supabase:', error);
+        return null;
+    }
+}
+
+// Panggil inisialisasi saat pertama kali
+if (!window.supabaseClient) {
+    window.supabaseClient = initializeSupabase();
+}
+supabase = window.supabaseClient;
 
 // Folder definitions
 const PROJECT_FOLDERS = [
@@ -40,14 +57,23 @@ const PROJECT_FOLDERS = [
     }
 ];
 
+// Global variables
+let allProjects = [];
+const folderStates = {};
+
 // ==========================================
-// PORTFOLIO FUNCTIONS - PUBLIC VIEW DENGAN FOLDER
+// PORTFOLIO FUNCTIONS
 // ==========================================
 
-// Load semua projects dari database
 async function loadAllProjects() {
     try {
         console.log('🔄 Loading projects from database...');
+        
+        // Cek supabase
+        if (!supabase) {
+            console.error('Supabase not initialized');
+            return;
+        }
         
         const { data: projects, error } = await supabase
             .from('Portfolio')
@@ -68,8 +94,9 @@ async function loadAllProjects() {
     }
 }
 
-// Function refresh portfolio
+// REFRESH FUNCTION - PASTIKAN INI ADA
 async function refreshPortfolio() {
+    console.log('🔄 Refreshing portfolio...');
     const btn = document.querySelector('.refresh-btn');
     if (btn) {
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
@@ -85,6 +112,7 @@ async function refreshPortfolio() {
         }
     }, 1000);
 }
+
 
 // Update statistik - hanya total project
 function updateStats(projects) {
@@ -492,3 +520,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
