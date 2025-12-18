@@ -310,3 +310,4 @@ function getPlatformFromUrl(url) {
     if (url.includes('x.com') || url.includes('twitter.com')) return 'X';
     return 'Website';
 }
+
