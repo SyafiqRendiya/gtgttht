@@ -1,22 +1,45 @@
 /**
  * Iqbal - Modern Video Editor Portfolio
- * Clean & Modern Version
+ * Clean & Modern Version - FIXED
  */
 
 // ==========================================
-// SUPABASE CONFIGURATION
+// SUPABASE CONFIGURATION - FIXED: SINGLETON PATTERN
 // ==========================================
-const SUPABASE_URL = 'https://bqmsfhnojmmaouaweixi.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxbXNmaG5vam1tYW91YXdlaXhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNjg3ODAsImV4cCI6MjA3OTc0NDc4MH0.SOU9dUdJqWwa4BWW0qgbdIRiZNV8uH2v_654f_Puqa8';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let _supabaseClient = null;
+
+function getSupabaseClient() {
+    if (!_supabaseClient) {
+        const SUPABASE_URL = 'https://bqmsfhnojmmaouaweixi.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxbXNmaG5vam1tYW91YXdlaXhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNjg3ODAsImV4cCI6MjA3OTc0NDc4MH0.SOU9dUdJqWwa4BWW0qgbdIRiZNV8uH2v_654f_Puqa8';
+        
+        // Pastikan library Supabase sudah di-load
+        if (typeof supabase !== 'undefined' && supabase.createClient) {
+            _supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            console.log('✅ Supabase client initialized for main site');
+        } else {
+            console.error('❌ Supabase JS library not loaded');
+            // Fallback: Load library jika belum ada
+            if (!window.supabaseLoaded) {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+                script.onload = () => {
+                    window.supabaseLoaded = true;
+                    _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    console.log('✅ Supabase loaded dynamically');
+                };
+                document.head.appendChild(script);
+            }
+        }
+    }
+    return _supabaseClient;
+}
 
 // ==========================================
 // ANIMATIONS & EFFECTS
 // ==========================================
 
-// Initialize animations
 function initAnimations() {
-    // Add intersection observer for fade-in animations
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
@@ -31,7 +54,6 @@ function initAnimations() {
         });
     }, observerOptions);
 
-    // Observe all cards and sections
     document.querySelectorAll('.skill-card, .portfolio-item, .service-card').forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(30px)';
@@ -41,10 +63,9 @@ function initAnimations() {
 }
 
 // ==========================================
-// PORTFOLIO DISPLAY - DIPERBAIKI
+// PORTFOLIO DISPLAY - FIXED
 // ==========================================
 
-// Load projects from database - HANYA 3 PROJECT TERBARU
 async function loadPortfolioProjects() {
     try {
         console.log('🔄 Loading recent projects from database...');
@@ -55,11 +76,18 @@ async function loadPortfolioProjects() {
             return;
         }
         
-        const { data: projects, error } = await supabase
+        const client = getSupabaseClient();
+        if (!client) {
+            console.error('Supabase client not available');
+            showEmptyState();
+            return;
+        }
+        
+        const { data: projects, error } = await client
             .from('Portfolio')
             .select('*')
             .order('created_at', { ascending: false })
-            .limit(3); // HANYA AMBIL 3 PROJECT TERBARU
+            .limit(3);
         
         if (error) {
             console.error('Supabase error:', error);
@@ -86,7 +114,6 @@ async function loadPortfolioProjects() {
     }
 }
 
-// Create project HTML element - DIPERBAIKI
 function createProjectElement(project) {
     const element = document.createElement('div');
     element.className = 'portfolio-item';
@@ -117,7 +144,6 @@ function createProjectElement(project) {
     return element;
 }
 
-// Buat action button berdasarkan platform
 function createActionButton(project) {
     if (project.platform === 'YouTube' || project.platform === 'TikTok') {
         const buttonText = project.platform === 'YouTube' ? 'Watch Video' : 'Watch TikTok';
@@ -137,7 +163,6 @@ function createActionButton(project) {
     }
 }
 
-// Helper functions
 function getBadgeClass(platform) {
     const classes = {
         'YouTube': 'youtube-badge',
@@ -158,16 +183,17 @@ function formatDate(dateString) {
     });
 }
 
-// Show empty state
 function showEmptyState() {
     const portfolioGrid = document.getElementById('portfolioGrid');
-    portfolioGrid.innerHTML = `
-        <div class="empty-portfolio">
-            <i class="fas fa-film"></i>
-            <h3>Belum Ada Project</h3>
-            <p>Project akan muncul di sini setelah ditambahkan melalui admin panel</p>
-        </div>
-    `;
+    if (portfolioGrid) {
+        portfolioGrid.innerHTML = `
+            <div class="empty-portfolio">
+                <i class="fas fa-film"></i>
+                <h3>Belum Ada Project</h3>
+                <p>Project akan muncul di sini setelah ditambahkan melalui admin panel</p>
+            </div>
+        `;
+    }
 }
 
 // ==========================================
@@ -221,49 +247,23 @@ function initNavbarScroll() {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Iqbal Portfolio initialized');
     
-    initAnimations();
-    initSmoothScroll();
-    initNavbarScroll();
-    loadPortfolioProjects();
+    // Tunggu sedikit untuk pastikan Supabase library loaded
+    setTimeout(() => {
+        initAnimations();
+        initSmoothScroll();
+        initNavbarScroll();
+        loadPortfolioProjects();
+    }, 500);
 });
 
 // Refresh portfolio when page becomes visible
 document.addEventListener('visibilitychange', function() {
     if (!document.hidden) {
-        loadPortfolioProjects();
+        setTimeout(loadPortfolioProjects, 300);
     }
 });
 
-// Ini yang bisa lu pake SEKARANG tanpa API
-function autoFillFromURL(url) {
-    const platform = getPlatformFromUrl(url);
-    
-    // Default values based on platform
-    const defaults = {
-        'YouTube': {
-            title: `YouTube Video - ${new Date().toLocaleDateString()}`,
-            description: 'Check out this amazing video content! 🎬'
-        },
-        'TikTok': {
-            title: `TikTok Video - ${new Date().toLocaleDateString()}`,
-            description: 'Viral TikTok content that engages audience! ✨'
-        },
-        'Instagram': {
-            title: `Instagram Post - ${new Date().toLocaleDateString()}`,
-            description: 'Creative Instagram content that stands out! 📸'
-        },
-        'Facebook': {
-            title: `Facebook Video - ${new Date().toLocaleDateString()}`,
-            description: 'Engaging Facebook video content! 👍'
-        }
-    };
-    
-    return defaults[platform] || {
-        title: `My Project - ${new Date().toLocaleDateString()}`,
-        description: 'Amazing content created with passion and creativity! 🚀'
-    };
-}
-
+// Helper functions untuk future use
 function getPlatformFromUrl(url) {
     if (url.includes('youtube.com') || url.includes('youtu.be')) return 'YouTube';
     if (url.includes('tiktok.com')) return 'TikTok';
@@ -271,4 +271,3 @@ function getPlatformFromUrl(url) {
     if (url.includes('facebook.com')) return 'Facebook';
     return 'Website';
 }
-
