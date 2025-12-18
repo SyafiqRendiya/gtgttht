@@ -271,3 +271,4 @@ function getPlatformFromUrl(url) {
     if (url.includes('facebook.com')) return 'Facebook';
     return 'Website';
 }
+
