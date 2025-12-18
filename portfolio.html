@@ -885,8 +885,45 @@
         </div>
     </div>
 
+     <!-- Video Player Modal -->
+    <div id="videoPlayerModal" class="video-player-modal">
+        <div class="video-player-content">
+            <div class="video-player-header">
+                <h3 id="videoPlayerTitle" class="video-player-title">Video Player</h3>
+                <button class="close-video-btn" onclick="hideVideoPlayer()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="video-embed-container" id="videoEmbedContainer">
+                <!-- Video embed will be inserted here -->
+            </div>
+        </div>
+    </div>
+
     <!-- Supabase & Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-   <script src="portfolio.js"></script>
+    <script src="portfolio.js"></script>
+
+    <!-- Fix untuk tombol refresh -->
+    <script>
+        // Pastikan tombol refresh bekerja
+        document.addEventListener('DOMContentLoaded', function() {
+            const refreshBtn = document.querySelector('.refresh-btn');
+            if (refreshBtn) {
+                // Hapus onclick lama, tambahkan event listener baru
+                refreshBtn.removeAttribute('onclick');
+                refreshBtn.addEventListener('click', function() {
+                    if (typeof refreshPortfolio === 'function') {
+                        refreshPortfolio();
+                    } else {
+                        console.error('refreshPortfolio function not found');
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
 
 
