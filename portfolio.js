@@ -660,3 +660,4 @@ window.toggleFolder = toggleFolder;
 window.showVideoPlayer = showVideoPlayer;
 window.hideVideoPlayer = hideVideoPlayer;
 window.loadAllProjects = loadAllProjects;
+
