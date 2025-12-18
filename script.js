@@ -1,38 +1,22 @@
 /**
- * Iqbal - Modern Video Editor Portfolio
- * Clean & Modern Version - FIXED
+ * Iqbal - Modern Video Editor Portfolio - MAIN SITE
+ * COMPLETELY FIXED VERSION
  */
 
 // ==========================================
-// SUPABASE CONFIGURATION - FIXED: SINGLETON PATTERN
+// SUPABASE CONFIGURATION - SIMPLE VERSION
 // ==========================================
-let _supabaseClient = null;
+let mainSupabase = null;
 
-function getSupabaseClient() {
-    if (!_supabaseClient) {
+function getMainSupabase() {
+    if (!mainSupabase) {
         const SUPABASE_URL = 'https://bqmsfhnojmmaouaweixi.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxbXNmaG5vam1tYW91YXdlaXhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNjg3ODAsImV4cCI6MjA3OTc0NDc4MH0.SOU9dUdJqWwa4BWW0qgbdIRiZNV8uH2v_654f_Puqa8';
         
-        // Pastikan library Supabase sudah di-load
-        if (typeof supabase !== 'undefined' && supabase.createClient) {
-            _supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            console.log('✅ Supabase client initialized for main site');
-        } else {
-            console.error('❌ Supabase JS library not loaded');
-            // Fallback: Load library jika belum ada
-            if (!window.supabaseLoaded) {
-                const script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-                script.onload = () => {
-                    window.supabaseLoaded = true;
-                    _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                    console.log('✅ Supabase loaded dynamically');
-                };
-                document.head.appendChild(script);
-            }
-        }
+        mainSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        console.log('✅ Main site Supabase client created');
     }
-    return _supabaseClient;
+    return mainSupabase;
 }
 
 // ==========================================
@@ -63,12 +47,12 @@ function initAnimations() {
 }
 
 // ==========================================
-// PORTFOLIO DISPLAY - FIXED
+// PORTFOLIO DISPLAY - ULTIMATE FIX
 // ==========================================
 
 async function loadPortfolioProjects() {
     try {
-        console.log('🔄 Loading recent projects from database...');
+        console.log('🔄 [MAIN] Loading recent projects from database...');
         
         const portfolioGrid = document.getElementById('portfolioGrid');
         if (!portfolioGrid) {
@@ -76,35 +60,61 @@ async function loadPortfolioProjects() {
             return;
         }
         
-        const client = getSupabaseClient();
+        const client = getMainSupabase();
         if (!client) {
             console.error('Supabase client not available');
             showEmptyState();
             return;
         }
         
-        const { data: projects, error } = await client
-            .from('Portfolio')
-            .select('*')
-            .order('created_at', { ascending: false })
-            .limit(3);
+        // Try multiple table names
+        let projects = [];
+        let error = null;
         
-        if (error) {
-            console.error('Supabase error:', error);
-            throw error;
+        // Try with quotes first
+        try {
+            const result = await client
+                .from('"Portfolio"')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(3);
+            
+            projects = result.data || [];
+            error = result.error;
+            
+            if (error) {
+                // Try without quotes
+                const result2 = await client
+                    .from('Portfolio')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(3);
+                
+                projects = result2.data || [];
+                error = result2.error;
+            }
+        } catch (err) {
+            console.error('Query error:', err);
+            error = err;
         }
         
         portfolioGrid.innerHTML = '';
         
+        if (error) {
+            console.error('Supabase error:', error);
+            showEmptyState();
+            return;
+        }
+        
         if (projects && projects.length > 0) {
-            console.log(`✅ Loaded ${projects.length} recent projects`);
+            console.log(`✅ [MAIN] Loaded ${projects.length} recent projects`);
             
             projects.forEach(project => {
                 const projectElement = createProjectElement(project);
                 portfolioGrid.appendChild(projectElement);
             });
         } else {
-            console.log('No projects found, showing empty state');
+            console.log('[MAIN] No projects found, showing empty state');
             showEmptyState();
         }
         
@@ -118,23 +128,30 @@ function createProjectElement(project) {
     const element = document.createElement('div');
     element.className = 'portfolio-item';
     
-    const badgeClass = getBadgeClass(project.platform);
+    // Safe defaults
+    const title = project.title || 'Untitled Project';
+    const description = project.description || 'No description';
+    const imageUrl = project.image_url || 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=225&fit=crop';
+    const platform = project.platform || 'Website';
+    const platformIcon = project.platform_icon || getDefaultPlatformIcon(platform);
+    
+    const badgeClass = getBadgeClass(platform);
     const actionButton = createActionButton(project);
     
     element.innerHTML = `
         <div class="portfolio-img">
-            <img src="${project.image_url}" alt="${project.title}" loading="lazy" 
+            <img src="${imageUrl}" alt="${title}" loading="lazy" 
                  onerror="this.src='https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=225&fit=crop'">
             <div class="portfolio-overlay">
                 <div class="platform-badge ${badgeClass}">
-                    <i class="${project.platform_icon}"></i>
+                    <i class="${platformIcon}"></i>
                 </div>
             </div>
         </div>
         
         <div class="portfolio-content">
-            <h3>${project.title}</h3>
-            <p>${project.description}</p>
+            <h3>${title}</h3>
+            <p>${description}</p>
             <div class="portfolio-meta">
                 ${actionButton}
                 <span class="portfolio-date">${formatDate(project.created_at)}</span>
@@ -144,20 +161,35 @@ function createProjectElement(project) {
     return element;
 }
 
+function getDefaultPlatformIcon(platform) {
+    const icons = {
+        'YouTube': 'fab fa-youtube',
+        'TikTok': 'fab fa-tiktok',
+        'Instagram': 'fab fa-instagram',
+        'Facebook': 'fab fa-facebook',
+        'Twitter': 'fab fa-twitter',
+        'X': 'fab fa-x-twitter'
+    };
+    return icons[platform] || 'fas fa-globe';
+}
+
 function createActionButton(project) {
-    if (project.platform === 'YouTube' || project.platform === 'TikTok') {
-        const buttonText = project.platform === 'YouTube' ? 'Watch Video' : 'Watch TikTok';
-        const buttonIcon = project.platform === 'YouTube' ? 'fa-play-circle' : 'fa-music';
+    const platform = project.platform || 'Website';
+    const url = project.url || '#';
+    
+    if (platform === 'YouTube' || platform === 'TikTok') {
+        const buttonText = platform === 'YouTube' ? 'Watch Video' : 'Watch TikTok';
+        const buttonIcon = platform === 'YouTube' ? 'fa-play-circle' : 'fa-music';
         
         return `
-            <a href="${project.url}" target="_blank" class="portfolio-link">
+            <a href="${url}" target="_blank" class="portfolio-link">
                 <i class="fas ${buttonIcon}"></i> ${buttonText}
             </a>
         `;
     } else {
         return `
-            <a href="${project.url}" target="_blank" class="portfolio-link">
-                <i class="${project.platform_icon}"></i> View on ${project.platform}
+            <a href="${url}" target="_blank" class="portfolio-link">
+                <i class="${project.platform_icon || getDefaultPlatformIcon(platform)}"></i> View on ${platform}
             </a>
         `;
     }
@@ -169,18 +201,24 @@ function getBadgeClass(platform) {
         'TikTok': 'tiktok-badge',
         'Instagram': 'instagram-badge',
         'Facebook': 'facebook-badge',
-        'Twitter': 'twitter-badge'
+        'Twitter': 'twitter-badge',
+        'X': 'twitter-badge'
     };
     return classes[platform] || 'website-badge';
 }
 
 function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('id-ID', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
+    try {
+        if (!dateString) return 'Recent';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('id-ID', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    } catch (e) {
+        return 'Recent';
+    }
 }
 
 function showEmptyState() {
@@ -245,15 +283,15 @@ function initNavbarScroll() {
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Iqbal Portfolio initialized');
+    console.log('🚀 Main site initialized');
     
-    // Tunggu sedikit untuk pastikan Supabase library loaded
+    // Wait for Supabase to load
     setTimeout(() => {
         initAnimations();
         initSmoothScroll();
         initNavbarScroll();
         loadPortfolioProjects();
-    }, 500);
+    }, 800);
 });
 
 // Refresh portfolio when page becomes visible
@@ -263,11 +301,12 @@ document.addEventListener('visibilitychange', function() {
     }
 });
 
-// Helper functions untuk future use
+// Helper functions
 function getPlatformFromUrl(url) {
     if (url.includes('youtube.com') || url.includes('youtu.be')) return 'YouTube';
     if (url.includes('tiktok.com')) return 'TikTok';
     if (url.includes('instagram.com')) return 'Instagram';
     if (url.includes('facebook.com')) return 'Facebook';
+    if (url.includes('x.com') || url.includes('twitter.com')) return 'X';
     return 'Website';
 }
